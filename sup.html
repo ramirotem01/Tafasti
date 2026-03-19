@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tafasti! | אזור ספקים (SUP)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Assistant:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Assistant', sans-serif; background-color: #f1f5f9; }
+        .tab-btn.active { border-bottom: 4px solid #4f46e5; color: #4f46e5; background: #eef2ff; }
+        .glass { background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(10px); }
+        input, textarea { transition: all 0.2s; }
+        input:focus { border-color: #4f46e5 !important; box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1); }
+    </style>
+</head>
+<body class="text-slate-800">
+
+    <header class="bg-white shadow-sm p-6 mb-8 border-b border-slate-200">
+        <div class="max-w-4xl mx-auto flex justify-between items-center">
+            <div>
+                <h1 class="text-3xl font-black text-indigo-600 italic">Tafasti!</h1>
+                <span class="text-slate-400 text-sm font-bold tracking-widest uppercase">Supplier Portal (SUP)</span>
+            </div>
+            <a href="index.html" class="text-sm font-bold text-slate-500 hover:text-indigo-600 border border-slate-200 px-4 py-2 rounded-xl transition">צפייה באתר ←</a>
+        </div>
+    </header>
+
+    <main class="max-w-4xl mx-auto px-6 pb-20">
+        
+        <div class="flex bg-white rounded-2xl shadow-sm overflow-hidden mb-8 p-1 border border-slate-200">
+            <button onclick="switchTab('new-deal')" id="tab-new-deal" class="tab-btn active flex-1 py-4 font-bold rounded-xl transition">
+                ✨ העלאת דיל חדש
+            </button>
+            <button onclick="switchTab('my-deals')" id="tab-my-deals" class="tab-btn flex-1 py-4 font-bold rounded-xl transition">
+                📋 הדילים הפעילים שלי
+            </button>
+        </div>
+
+        <section id="new-deal-section" class="tab-content">
+            <div class="bg-white p-8 rounded-[2rem] shadow-xl border border-white">
+                <h2 class="text-2xl font-black mb-6 text-slate-800">פרסום הצעה מהרגע להרגע</h2>
+                <form id="offerForm" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="md:col-span-2">
+                        <label class="block text-sm font-bold mb-2 text-slate-600">שם האטרקציה / כותרת הדיל</label>
+                        <input type="text" id="title" placeholder="למשל: 4 מקומות פנויים לחוות הסוסים" required class="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl outline-none">
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-bold mb-2 text-slate-600">עיר / יישוב</label>
+                        <input type="text" id="city" required class="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl">
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-bold mb-2 text-slate-600">שעה (להיום)</label>
+                        <input type="text" id="time" placeholder="למשל: 17:30" required class="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl">
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-bold mb-2 text-slate-600">מחיר רגיל בקופה</label>
+                        <input type="number" id="originalPrice" required class="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl">
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-bold mb-2 text-indigo-600 font-black">מחיר "תפסתי" (הנחה)</label>
+                        <input type="number" id="discountPrice" required class="w-full p-4 border-2 border-indigo-200 rounded-2xl bg-indigo-50/30">
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-bold mb-2 text-slate-600">טלפון לתיאום מולכם</label>
+                        <input type="tel" id="phone" placeholder="05x-xxxxxxx" required class="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl">
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-bold mb-2 text-slate-600">קישור לתמונה יפה</label>
+                        <input type="url" id="imageUrl" placeholder="https://images.com/image.jpg" required class="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl">
+                    </div>
+
+                    <div class="md:col-span-2">
+                        <label class="block text-sm font-bold mb-2 text-slate-600">תיאור קצר (למה כדאי לבוא?)</label>
+                        <textarea id="description" rows="3" class="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl"></textarea>
+                    </div>
+
+                    <div class="md:col-span-2 mt-4">
+                        <button type="submit" id="submitBtn" class="w-full bg-indigo-600 text-white py-6 rounded-[1.5rem] font-black text-2xl shadow-lg shadow-indigo-200 hover:bg-indigo-700 hover:-translate-y-1 transition active:scale-95">פרסם הצעה עכשיו!</button>
+                    </div>
+                </form>
+            </div>
+        </section>
+
+        <section id="my-deals-section" class="tab-content hidden">
+            <div id="myDealsList" class="grid gap-4">
+                <div class="text-center py-20 text-slate-400 font-bold italic">טוען דילים שפורסמו...</div>
+            </div>
+        </section>
+    </main>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc, serverTimestamp, query, orderBy } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyCxMeoohFIuQcTJaAJ-Z4nd4Kmj79H1KYg",
+            authDomain: "tafasti-20c41.firebaseapp.com",
+            projectId: "tafasti-20c41",
+            storageBucket: "tafasti-20c41.firebasestorage.app",
+            messagingSenderId: "457032202921",
+            appId: "1:457032202921:web:8f397ae80d9506a66d07b8"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        // Tab Switcher Logic
+        window.switchTab = (tab) => {
+            document.getElementById('new-deal-section').classList.toggle('hidden', tab !== 'new-deal');
+            document.getElementById('my-deals-section').classList.toggle('hidden', tab !== 'my-deals');
+            document.getElementById('tab-new-deal').classList.toggle('active', tab === 'new-deal');
+            document.getElementById('tab-my-deals').classList.toggle('active', tab === 'my-deals');
+            if(tab === 'my-deals') loadMyDeals();
+        }
+
+        // Form Submit
+        const form = document.getElementById('offerForm');
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('submitBtn');
+            btn.disabled = true;
+            btn.innerText = 'מעלה הצעה...';
+
+            try {
+                await addDoc(collection(db, "offers"), {
+                    title: document.getElementById('title').value,
+                    city: document.getElementById('city').value,
+                    time: document.getElementById('time').value,
+                    originalPrice: Number(document.getElementById('originalPrice').value),
+                    discountPrice: Number(document.getElementById('discountPrice').value),
+                    phone: document.getElementById('phone').value,
+                    imageUrl: document.getElementById('imageUrl').value,
+                    description: document.getElementById('description').value,
+                    status: "active",
+                    createdAt: serverTimestamp()
+                });
+                alert('ההצעה עלתה לאוויר בהצלחה!');
+                form.reset();
+                switchTab('my-deals');
+            } catch (err) {
+                alert('שגיאה בחיבור ל-Firebase. וודא שהגדרת הרשאות כתיבה ב-Console.');
+            } finally {
+                btn.disabled = false;
+                btn.innerText = 'פרסם הצעה עכשיו!';
+            }
+        });
+
+        // Load Deals with Delete Option
+        async function loadMyDeals() {
+            const list = document.getElementById('myDealsList');
+            list.innerHTML = '<div class="text-center py-10">מעדכן רשימה...</div>';
+            
+            const q = query(collection(db, "offers"), orderBy("createdAt", "desc"));
+            const querySnapshot = await getDocs(q);
+            
+            list.innerHTML = '';
+            if(querySnapshot.empty) {
+                list.innerHTML = '<div class="bg-white p-12 rounded-[2rem] text-center italic text-slate-400">עוד לא פרסמת דילים. זה הזמן להתחיל!</div>';
+                return;
+            }
+
+            querySnapshot.forEach((docSnap) => {
+                const data = docSnap.data();
+                const dId = docSnap.id;
+                list.innerHTML += `
+                    <div class="bg-white p-6 rounded-3xl shadow-sm border border-slate-100 flex flex-col md:flex-row justify-between items-center gap-4">
+                        <div class="flex items-center gap-4">
+                            <img src="${data.imageUrl}" class="w-16 h-16 rounded-2xl object-cover shadow-sm">
+                            <div>
+                                <h3 class="font-black text-slate-800">${data.title}</h3>
+                                <p class="text-sm text-slate-500 font-bold">${data.city} | ${data.time} | ₪${data.discountPrice}</p>
+                            </div>
+                        </div>
+                        <div class="flex gap-2 w-full md:w-auto">
+                            <button onclick="window.deleteOffer('${dId}')" class="flex-1 md:flex-none bg-red-50 text-red-500 px-6 py-3 rounded-2xl font-bold hover:bg-red-500 hover:text-white transition">הסר דיל</button>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        window.deleteOffer = async (id) => {
+            if(confirm('בטוח שרוצים להסיר את הדיל מהאתר?')) {
+                await deleteDoc(doc(db, "offers", id));
+                loadMyDeals();
+            }
+        }
+    </script>
+</body>
+</html>
