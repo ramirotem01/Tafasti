@@ -7,29 +7,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Assistant:wght@300;400;600;800&display=swap" rel="stylesheet">
     
-    <script type="application/ld+json">
-    {
-      "@context": "https://schema.org/",
-      "@type": "Event",
-      "name": "חדר בריחה - שודדי הים",
-      "description": "דיל רגע אחרון לילדים בחדר בריחה הכי פופולרי בתל אביב",
-      "image": "https://images.unsplash.com/photo-1550745165-9bc0b252726f",
-      "startDate": "2026-03-19T17:00",
-      "location": {
-        "@type": "Place",
-        "name": "שודדי הים ת"א",
-        "address": "המסגר 10, תל אביב"
-      },
-      "offers": {
-        "@type": "Offer",
-        "url": "https://tafasti.co.il",
-        "price": "80",
-        "priceCurrency": "ILS",
-        "availability": "https://schema.org/InStock",
-        "validFrom": "2026-03-19"
-      }
-    }
-    </script>
+    <script id="json-ld-data" type="application/ld+json"></script>
 
     <style>
         body { font-family: 'Assistant', sans-serif; background-color: #f8fafc; }
@@ -37,6 +15,7 @@
         .gradient-text { background: linear-gradient(90deg, #6366f1, #ec4899); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
         .tab-content { display: none; }
         .tab-content.active { display: block; }
+        .deal-card:hover { transform: translateY(-5px); transition: 0.3s; }
     </style>
 </head>
 <body class="text-slate-900">
@@ -46,144 +25,145 @@
             <span class="text-indigo-600">Tafasti</span><span class="text-pink-500">!</span>
         </div>
         <div class="hidden md:flex gap-6 font-semibold">
-            <a href="#" class="hover:text-indigo-600 transition" onclick="showPage('results')">כל הדילים</a>
-            <a href="#" class="hover:text-indigo-600 transition">איך זה עובד?</a>
-            <a href="#" class="text-pink-600 border-b-2 border-pink-600">אזור עסקים</a>
+            <a href="#" class="hover:text-indigo-600" onclick="showPage('results')">כל הדילים</a>
+            <a href="#" class="text-pink-600 font-bold">אזור ספקים</a>
         </div>
-        <button class="bg-indigo-600 text-white px-5 py-2 rounded-full font-bold shadow-lg hover:bg-indigo-700 transition">חיפוש מהיר</button>
+        <button class="bg-indigo-600 text-white px-5 py-2 rounded-full font-bold shadow-lg hover:bg-indigo-700 transition">חיפוש</button>
     </nav>
 
     <main id="home" class="tab-content active">
         <section class="px-6 py-16 text-center">
-            <h1 class="text-5xl md:text-7xl font-extrabold mb-6 leading-tight">נשארתם בלי תוכניות? <br><span class="gradient-text">תפסתי לכם דיל!</span></h1>
-            <p class="text-xl text-slate-600 mb-10 max-w-2xl mx-auto">אטרקציות, סדנאות וחדרי בריחה מהרגע להרגע במחירים של חברים. בלי בירוקרטיה, פשוט מגיעים.</p>
-            
-            <div class="max-w-3xl mx-auto relative group">
-                <input type="text" placeholder="איזו אטרקציה מחפשים? (למשל: פינת חי בשבת)" class="w-full p-6 pr-14 rounded-3xl shadow-2xl border-none focus:ring-4 focus:ring-indigo-200 outline-none text-lg">
-                <button class="absolute left-4 top-4 bg-black text-white px-8 py-3 rounded-2xl font-bold hover:scale-105 transition" onclick="showPage('results')">חיפוש</button>
+            <h1 class="text-5xl md:text-7xl font-extrabold mb-6 leading-tight italic">נשארתם בלי תוכנית?<br><span class="gradient-text">תפסתי לכם דיל!</span></h1>
+            <div class="max-w-3xl mx-auto relative mt-10">
+                <input type="text" id="searchInput" placeholder="איזו אטרקציה מחפשים?" class="w-full p-6 pr-14 rounded-3xl shadow-2xl border-none focus:ring-4 focus:ring-indigo-200 outline-none text-lg">
+                <button class="absolute left-4 top-4 bg-black text-white px-8 py-3 rounded-2xl font-bold" onclick="showPage('results')">חיפוש</button>
             </div>
         </section>
 
         <section class="px-6 py-12 max-w-7xl mx-auto">
-            <h2 class="text-2xl font-bold mb-8 flex items-center gap-2">🔥 הדילים הכי חמים לעכשיו</h2>
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                <div class="bg-white rounded-[2.5rem] overflow-hidden shadow-xl hover:shadow-2xl transition cursor-pointer group" onclick="showPage('deal')">
-                    <div class="relative">
-                        <img src="https://images.unsplash.com/photo-1550745165-9bc0b252726f?auto=format&fit=crop&w=600" class="h-56 w-full object-cover">
-                        <span class="absolute top-4 right-4 bg-pink-500 text-white px-3 py-1 rounded-full text-sm font-bold">נותרו 2 מקומות!</span>
-                    </div>
-                    <div class="p-6">
-                        <div class="flex justify-between items-start mb-2">
-                            <h3 class="text-xl font-bold">חדר בריחה שודדי הים</h3>
-                            <div class="text-left font-bold">
-                                <span class="text-slate-400 line-through text-sm">₪120</span>
-                                <span class="text-indigo-600 text-xl">₪80</span>
-                            </div>
-                        </div>
-                        <p class="text-slate-500 text-sm mb-4 italic">תל אביב | היום ב-17:00</p>
-                        <button class="w-full py-3 bg-slate-100 rounded-2xl font-bold group-hover:bg-indigo-600 group-hover:text-white transition">לפרטים ומימוש</button>
-                    </div>
-                </div>
+            <h2 class="text-2xl font-bold mb-8">🔥 הדילים הכי חמים לעכשיו</h2>
+            <div id="home-deals-grid" class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div class="text-slate-400 animate-pulse">טוען דילים שווים...</div>
             </div>
         </section>
     </main>
 
     <main id="results" class="tab-content px-6 py-12 max-w-7xl mx-auto">
-        <h2 class="text-3xl font-extrabold mb-2">תוצאות חיפוש</h2>
-        <p class="text-slate-500 mb-8">מצאנו 12 אטרקציות פנויות באזור המרכז</p>
-        
-        <div class="flex gap-4 mb-10 overflow-x-auto pb-4">
-            <button class="bg-indigo-600 text-white px-6 py-2 rounded-full whitespace-nowrap font-semibold">הכל</button>
-            <button class="bg-white border px-6 py-2 rounded-full whitespace-nowrap hover:bg-slate-50 font-semibold">חדרי בריחה</button>
-            <button class="bg-white border px-6 py-2 rounded-full whitespace-nowrap hover:bg-slate-50 font-semibold">פינות חי</button>
-            <button class="bg-white border px-6 py-2 rounded-full whitespace-nowrap hover:bg-slate-50 font-semibold">סדנאות יצירה</button>
-        </div>
-
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6" id="results-grid">
-            </div>
+        <h2 class="text-3xl font-extrabold mb-8">כל האטרקציות הפנויות</h2>
+        <div id="results-grid" class="grid grid-cols-1 md:grid-cols-4 gap-6"></div>
     </main>
 
     <main id="deal" class="tab-content px-6 py-12 max-w-4xl mx-auto">
-        <button class="mb-6 text-indigo-600 font-bold flex items-center gap-2" onclick="showPage('results')">← חזרה לחיפוש</button>
-        
-        <div class="bg-white rounded-[3rem] p-8 shadow-2xl overflow-hidden relative border border-slate-100">
-            <img src="https://images.unsplash.com/photo-1550745165-9bc0b252726f?auto=format&fit=crop&w=1200" class="w-full h-80 object-cover rounded-[2rem] mb-8">
-            
-            <div class="flex flex-col md:flex-row justify-between gap-6 mb-8">
-                <div>
-                    <h1 class="text-4xl font-extrabold mb-2 text-slate-800">חדר בריחה - שודדי הים</h1>
-                    <p class="text-lg text-slate-600 flex items-center gap-2 italic">📍 המסגר 10, תל אביב</p>
-                </div>
-                <div class="bg-indigo-50 p-6 rounded-3xl text-center border border-indigo-100 min-w-[150px]">
-                    <p class="text-sm font-semibold text-indigo-400 uppercase tracking-widest">מחיר מיוחד</p>
-                    <p class="text-4xl font-black text-indigo-600">₪80</p>
-                    <p class="text-sm text-slate-400 line-through italic">₪120 מחיר מקורי</p>
-                </div>
-            </div>
-
-            <div class="prose prose-slate mb-10 text-lg">
-                <p>הצטרפו להרפתקה של פעם בחיים! חדר הבריחה שודדי הים נפתח במיוחד לקבוצות ספונטניות. החדר מותאם לילדים מגיל 6 ומעלה וכולל חידות מאתגרות, תפאורה מושקעת וחוויה בלתי נשכחת.</p>
-                <ul class="mt-4 space-y-2 text-slate-600 font-medium">
-                    <li>✓ מתאים ל-2 עד 6 משתתפים</li>
-                    <li>✓ משך הפעילות: 60 דקות</li>
-                    <li>✓ חניה חינם בקרבת מקום</li>
-                </ul>
-            </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <a href="tel:0501234567" class="flex items-center justify-center gap-3 bg-indigo-600 text-white p-5 rounded-2xl text-xl font-bold shadow-lg hover:bg-indigo-700 transition">
-                    📞 חייגו עכשיו למימוש
-                </a>
-                <a href="https://wa.me/972501234567" target="_blank" class="flex items-center justify-center gap-3 bg-green-500 text-white p-5 rounded-2xl text-xl font-bold shadow-lg hover:bg-green-600 transition">
-                    💬 וואטסאפ לספק
-                </a>
-            </div>
-
-            <div class="mt-8 text-center p-6 bg-slate-50 rounded-3xl border-2 border-dashed border-slate-200">
-                <p class="text-sm text-slate-500 mb-2">ספרו לספק שהגעתם דרכנו כדי לקבל את המחיר הזה</p>
-                <div class="text-2xl font-mono font-black text-slate-700 tracking-[0.3em]">TAFASTI-KIDS</div>
-                <button class="mt-2 text-indigo-600 text-sm font-bold underline">לחץ להעתקת קוד קופון</button>
-            </div>
-        </div>
-
-        <div class="mt-12 bg-slate-200 h-40 rounded-3xl flex items-center justify-center text-slate-400 font-bold italic">
-            מקום לפרסומת - Google AdSense
-        </div>
+        <div id="deal-content"></div>
     </main>
 
-    <footer class="bg-white border-t py-12 px-6 mt-20 text-center">
-        <p class="text-slate-400 font-medium">© 2026 Tafasti. כל הזכויות שמורות.</p>
-        <div class="mt-4 flex justify-center gap-6 text-slate-500 text-sm">
-            <a href="#">תקנון</a>
-            <a href="#">פרטיות</a>
-            <a href="#">הוספת עסק</a>
-        </div>
-    </footer>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getFirestore, collection, getDocs, query, where, Timestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-    <script>
-        // Simple Page Switcher Logic
-        function showPage(pageId) {
-            document.querySelectorAll('.tab-content').forEach(page => {
-                page.classList.remove('active');
-            });
-            document.getElementById(pageId).classList.add('active');
-            window.scrollTo(0, 0);
-        }
+        const firebaseConfig = {
+            apiKey: "AIzaSyCxMeoohFIuQcTJaAJ-Z4nd4Kmj79H1KYg",
+            authDomain: "tafasti-20c41.firebaseapp.com",
+            projectId: "tafasti-20c41",
+            storageBucket: "tafasti-20c41.firebasestorage.app",
+            messagingSenderId: "457032202921",
+            appId: "1:457032202921:web:8f397ae80d9506a66d07b8"
+        };
 
-        // Generate dummy results for the results page
-        const grid = document.getElementById('results-grid');
-        for(let i=0; i<8; i++) {
-            grid.innerHTML += `
-                <div class="bg-white rounded-[2rem] overflow-hidden shadow-md hover:shadow-xl transition cursor-pointer" onclick="showPage('deal')">
-                    <img src="https://images.unsplash.com/photo-1519331379826-f10be5486c6f?auto=format&fit=crop&w=400" class="h-40 w-full object-cover">
-                    <div class="p-4">
-                        <h3 class="font-bold">אטרקציה ${i+1}</h3>
-                        <p class="text-indigo-600 font-black">₪${50 + (i*10)}</p>
-                        <p class="text-xs text-slate-400 mt-1">תל אביב - היום ב-18:00</p>
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        // Function to render cards
+        async function loadDeals() {
+            const q = query(collection(db, "offers"), where("status", "==", "active"));
+            const querySnapshot = await getDocs(q);
+            const homeGrid = document.getElementById('home-deals-grid');
+            const resultsGrid = document.getElementById('results-grid');
+            
+            homeGrid.innerHTML = '';
+            resultsGrid.innerHTML = '';
+
+            querySnapshot.forEach((doc) => {
+                const data = doc.data();
+                const cardHtml = `
+                    <div class="deal-card bg-white rounded-[2.5rem] overflow-hidden shadow-xl cursor-pointer" onclick="showDeal('${doc.id}')">
+                        <img src="${data.imageUrl}" class="h-48 w-full object-cover">
+                        <div class="p-6">
+                            <div class="flex justify-between items-start mb-2">
+                                <h3 class="text-xl font-bold">${data.title}</h3>
+                                <span class="text-indigo-600 font-bold text-xl">₪${data.discountPrice}</span>
+                            </div>
+                            <p class="text-slate-500 text-sm mb-4">${data.city} | היום ב-${data.time}</p>
+                            <button class="w-full py-3 bg-slate-100 rounded-2xl font-bold hover:bg-indigo-600 hover:text-white transition">לפרטים ומימוש</button>
+                        </div>
                     </div>
-                </div>
-            `;
+                `;
+                homeGrid.innerHTML += cardHtml;
+                resultsGrid.innerHTML += cardHtml;
+            });
         }
+
+        // Global function to show single deal (attached to window for onclick)
+        window.showDeal = async (id) => {
+            const querySnapshot = await getDocs(collection(db, "offers")); // Simplified for MVP
+            let data;
+            querySnapshot.forEach(doc => { if(doc.id === id) data = doc.data(); });
+
+            if(data) {
+                // Update SEO
+                updateSEO(data);
+                
+                const dealContent = document.getElementById('deal-content');
+                dealContent.innerHTML = `
+                    <button class="mb-6 text-indigo-600 font-bold" onclick="showPage('home')">← חזרה</button>
+                    <div class="bg-white rounded-[3rem] p-8 shadow-2xl border border-slate-100">
+                        <img src="${data.imageUrl}" class="w-full h-80 object-cover rounded-[2rem] mb-8">
+                        <div class="flex justify-between items-center mb-8">
+                            <h1 class="text-4xl font-extrabold">${data.title}</h1>
+                            <div class="text-center bg-indigo-50 p-4 rounded-3xl min-w-[120px]">
+                                <p class="text-3xl font-black text-indigo-600">₪${data.discountPrice}</p>
+                                <p class="text-sm line-through text-slate-400">₪${data.originalPrice}</p>
+                            </div>
+                        </div>
+                        <p class="text-lg text-slate-600 mb-10">${data.description}</p>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <a href="tel:${data.phone}" class="flex items-center justify-center gap-3 bg-indigo-600 text-white p-5 rounded-2xl text-xl font-bold shadow-lg">📞 חייגו למימוש</a>
+                            <a href="https://wa.me/${data.phone}" target="_blank" class="flex items-center justify-center gap-3 bg-green-500 text-white p-5 rounded-2xl text-xl font-bold shadow-lg">💬 וואטסאפ</a>
+                        </div>
+                        <div class="mt-8 text-center p-6 bg-slate-50 rounded-3xl border-2 border-dashed border-slate-200">
+                            <p class="text-sm text-slate-500 mb-1">קוד קופון להצגה במקום:</p>
+                            <div class="text-2xl font-mono font-black text-slate-700">TAFASTI-${data.city.toUpperCase()}</div>
+                        </div>
+                    </div>
+                `;
+                window.showPage('deal');
+            }
+        };
+
+        function updateSEO(data) {
+            const script = document.getElementById('json-ld-data');
+            const ld = {
+                "@context": "https://schema.org/",
+                "@type": "Event",
+                "name": data.title,
+                "description": data.description,
+                "image": data.imageUrl,
+                "offers": {
+                    "@type": "Offer",
+                    "price": data.discountPrice,
+                    "priceCurrency": "ILS"
+                }
+            };
+            script.textContent = JSON.stringify(ld);
+        }
+
+        window.showPage = (id) => {
+            document.querySelectorAll('.tab-content').forEach(p => p.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+            window.scrollTo(0,0);
+        };
+
+        loadDeals();
     </script>
 </body>
 </html>
