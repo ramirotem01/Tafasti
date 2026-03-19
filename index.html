@@ -3,68 +3,52 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Tafasti! | Bento Experience</title>
+    <title>Tafasti! | Pro Experience</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Assistant:wght@400;600;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Assistant:wght@400;700;800&display=swap" rel="stylesheet">
     <style>
-        :root { --bento-bg: #f5f5f7; --card-bg: #ffffff; --accent: #6366f1; }
-        body { font-family: 'Assistant', sans-serif; background-color: var(--bento-bg); color: #1d1d1f; margin: 0; padding-bottom: 100px; }
-        .bento-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; padding: 16px; max-width: 500px; margin: 0 auto; }
-        .bento-card { background: var(--card-bg); border-radius: 24px; padding: 16px; box-shadow: 0 4px 24px rgba(0,0,0,0.04); transition: transform 0.2s; border: 1px solid rgba(0,0,0,0.02); }
-        .bento-card:active { transform: scale(0.97); }
-        .featured { grid-column: span 2; padding: 0; overflow: hidden; position: relative; height: 260px; }
-        .nav-island { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); width: 90%; max-width: 400px; background: rgba(29, 29, 31, 0.8); backdrop-filter: blur(20px); border-radius: 32px; height: 70px; display: flex; justify-content: space-around; items-center; z-index: 100; border: 1px solid rgba(255,255,255,0.1); }
-        .nav-item { color: #86868b; display: flex; flex-direction: column; align-items: center; font-size: 10px; font-weight: 700; }
-        .nav-item.active { color: #fff; }
-        .price-tag { background: var(--accent); color: white; padding: 4px 12px; border-radius: 12px; font-weight: 800; font-size: 14px; }
-        .page { display: none; animation: bentoIn 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
+        :root { --bg: #0a0a0c; --card: #16161a; --accent: #3b82f6; --text-main: #ffffff; }
+        body { font-family: 'Assistant', sans-serif; background-color: var(--bg); color: var(--text-main); margin: 0; padding-bottom: 90px; }
+        .glass { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.05); }
+        .deal-card { background: var(--card); border-radius: 24px; overflow: hidden; border: 1px solid rgba(255, 255, 255, 0.03); transition: 0.3s cubic-bezier(0.2, 0.8, 0.2, 1); }
+        .deal-card:active { transform: scale(0.96); filter: brightness(1.2); }
+        .accent-gradient { background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); }
+        .nav-dock { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); width: 90%; max-width: 400px; background: rgba(22, 22, 26, 0.8); backdrop-filter: blur(20px); border-radius: 24px; height: 65px; display: flex; justify-content: space-around; items-center; z-index: 100; border: 1px solid rgba(255,255,255,0.08); box-shadow: 0 20px 40px rgba(0,0,0,0.4); }
+        .nav-btn { color: #52525b; display: flex; flex-direction: column; align-items: center; font-size: 10px; font-weight: 800; }
+        .nav-btn.active { color: var(--accent); }
+        .page { display: none; animation: slideUp 0.4s ease-out; }
         .page.active { display: block; }
-        @keyframes bentoIn { from { opacity: 0; transform: translateY(20px) scale(0.95); } to { opacity: 1; transform: translateY(0) scale(1); } }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body>
 
-    <header class="p-8 pb-2 max-w-[500px] mx-auto flex justify-between items-end">
+    <header class="p-6 pt-10 flex justify-between items-center max-w-lg mx-auto">
         <div>
-            <p class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-1">היום בצהריים</p>
-            <h1 class="text-4xl font-black tracking-tighter italic text-indigo-600">Tafasti!</h1>
+            <h1 class="text-4xl font-black italic tracking-tighter text-white">Tafasti<span class="text-blue-500">!</span></h1>
+            <p class="text-[10px] text-blue-400 font-bold uppercase tracking-[0.2em]">Live Deals Dashboard</p>
         </div>
-        <div class="bg-white p-3 rounded-2xl shadow-sm">⚡</div>
+        <div class="w-12 h-12 glass rounded-full flex items-center justify-center text-xl">⚡</div>
     </header>
 
-    <div id="home" class="page active">
-        <div id="deals-container" class="bento-grid">
-            <div class="bento-card featured animate-pulse bg-slate-200"></div>
-            <div class="bento-card animate-pulse bg-slate-200 h-40"></div>
-            <div class="bento-card animate-pulse bg-slate-200 h-40"></div>
+    <div id="home" class="page active px-5 max-w-lg mx-auto">
+        <div class="mb-8">
+            <h2 class="text-2xl font-extrabold mb-1">דילים חמים להיום</h2>
+            <div class="h-1 w-12 accent-gradient rounded-full"></div>
+        </div>
+        <div id="deals-list" class="space-y-5">
+            <div class="deal-card h-48 animate-pulse bg-white/5"></div>
         </div>
     </div>
 
-    <div id="explore" class="page p-6 max-w-[500px] mx-auto">
-        <h2 class="text-3xl font-extrabold mb-6">חיפוש חכם</h2>
-        <div class="bento-card mb-4">
-            <input type="text" placeholder="לאן בא לכם ללכת?" class="w-full bg-transparent border-none outline-none text-xl font-bold">
-        </div>
-        <div class="grid grid-cols-2 gap-4">
-            <div class="bento-card text-center py-8">🌊 <br><span class="text-sm font-bold mt-2 block">מים</span></div>
-            <div class="bento-card text-center py-8">🧗 <br><span class="text-sm font-bold mt-2 block">אתגרי</span></div>
-        </div>
+    <div id="deal-view" class="page">
+        <div id="deal-detail-content" class="max-w-lg mx-auto"></div>
     </div>
 
-    <div id="deal-detail" class="page">
-        <div id="detail-content" class="max-w-[500px] mx-auto p-4"></div>
-    </div>
-
-    <nav class="nav-island">
-        <button onclick="showPage('home')" class="nav-item active">
-            <span class="text-2xl mb-1">🏠</span><span>בית</span>
-        </button>
-        <button onclick="showPage('explore')" class="nav-item">
-            <span class="text-2xl mb-1">🔍</span><span>גילוי</span>
-        </button>
-        <a href="sup.html" class="nav-item">
-            <span class="text-2xl mb-1">💼</span><span>ספקים</span>
-        </a>
+    <nav class="nav-dock">
+        <button onclick="showPage('home')" class="nav-btn active">🏠<span class="mt-1">FEED</span></button>
+        <button class="nav-btn">🔍<span class="mt-1">SEARCH</span></button>
+        <a href="sup.html" class="nav-btn">🔑<span class="mt-1">SUPPLIER</span></a>
     </nav>
 
     <script type="module">
@@ -82,57 +66,52 @@
         };
 
         async function loadDeals() {
-            const q = query(collection(db, "offers"), where("status", "==", "active"));
-            const snap = await getDocs(q);
-            const container = document.getElementById('deals-container');
-            container.innerHTML = '';
-
-            let index = 0;
+            const snap = await getDocs(query(collection(db, "offers"), where("status", "==", "active")));
+            const list = document.getElementById('deals-list');
+            list.innerHTML = '';
             snap.forEach(doc => {
                 const d = doc.data();
-                const isFeatured = index === 0;
-                container.innerHTML += `
-                    <div class="bento-card ${isFeatured ? 'featured' : ''}" onclick="openDeal('${doc.id}')">
-                        ${isFeatured ? `<img src="${d.imageUrl}" class="w-full h-full object-cover">
-                        <div class="absolute bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-black/80 to-transparent text-white">
-                            <span class="price-tag mb-2 inline-block">₪${d.discountPrice}</span>
-                            <h3 class="text-2xl font-black">${d.title}</h3>
-                        </div>` : `
-                        <div class="h-24 mb-3 rounded-2xl overflow-hidden"><img src="${d.imageUrl}" class="w-full h-full object-cover"></div>
-                        <h4 class="font-bold text-sm leading-tight mb-2">${d.title}</h4>
-                        <div class="flex justify-between items-center">
-                            <span class="text-indigo-600 font-black text-sm">₪${d.discountPrice}</span>
+                list.innerHTML += `
+                    <div class="deal-card" onclick="openDeal('${doc.id}')">
+                        <div class="relative h-44">
+                            <img src="${d.imageUrl}" class="w-full h-full object-cover grayscale-[0.2] hover:grayscale-0 transition">
+                            <div class="absolute top-4 left-4 bg-black/60 backdrop-blur px-3 py-1 rounded-lg text-[10px] font-black border border-white/10">LIVE</div>
                         </div>
-                        `}
+                        <div class="p-5 flex justify-between items-center">
+                            <div>
+                                <h3 class="font-extrabold text-lg">${d.title}</h3>
+                                <p class="text-blue-400 text-xs font-bold">${d.city} • ${d.time}</p>
+                            </div>
+                            <div class="text-right">
+                                <span class="block text-2xl font-black text-white">₪${d.discountPrice}</span>
+                                <span class="text-[10px] text-slate-500 line-through">₪${d.originalPrice}</span>
+                            </div>
+                        </div>
                     </div>
                 `;
-                index++;
             });
         }
 
         window.openDeal = async (id) => {
             const snap = await getDocs(collection(db, "offers"));
             let d; snap.forEach(doc => { if(doc.id === id) d = doc.data(); });
-            
-            document.getElementById('detail-content').innerHTML = `
-                <div class="bento-card featured mb-6"><img src="${d.imageUrl}" class="w-full h-full object-cover"></div>
-                <div class="bento-card mb-4">
-                    <h1 class="text-3xl font-black mb-2">${d.title}</h1>
-                    <p class="text-slate-400 font-bold italic">${d.city} • היום ב-${d.time}</p>
-                </div>
-                <div class="grid grid-cols-2 gap-4 mb-4">
-                    <div class="bento-card text-center"><p class="text-xs font-bold text-slate-400">מחיר רגיל</p><p class="text-xl line-through">₪${d.originalPrice}</p></div>
-                    <div class="bento-card text-center bg-indigo-600 text-white"><p class="text-xs font-bold opacity-80">מחיר תפסתי</p><p class="text-2xl font-black">₪${d.discountPrice}</p></div>
-                </div>
-                <div class="bento-card mb-8"><p class="text-lg leading-relaxed">${d.description}</p></div>
-                <div class="flex gap-4">
-                    <a href="https://wa.me/${d.phone}" class="flex-grow bg-green-500 text-white py-5 rounded-[2rem] text-center font-black text-xl shadow-xl">WhatsApp</a>
-                    <button onclick="showPage('home')" class="bg-white p-5 rounded-[2rem] shadow-sm">✕</button>
+            document.getElementById('deal-detail-content').innerHTML = `
+                <div class="relative"><img src="${d.imageUrl}" class="w-full h-80 object-cover opacity-80"></div>
+                <div class="p-8 -mt-10 bg-[#0a0a0c] rounded-t-[40px] relative z-10 border-t border-white/5">
+                    <h1 class="text-4xl font-black mb-4">${d.title}</h1>
+                    <div class="flex gap-4 mb-8">
+                        <div class="glass p-4 rounded-2xl flex-grow"><p class="text-xs text-slate-400 font-bold mb-1">מחיר בלעדי</p><p class="text-2xl font-black text-blue-500">₪${d.discountPrice}</p></div>
+                        <div class="glass p-4 rounded-2xl flex-grow text-center"><p class="text-xs text-slate-400 font-bold mb-1">זמן</p><p class="text-2xl font-black italic">${d.time}</p></div>
+                    </div>
+                    <p class="text-slate-400 leading-relaxed mb-10 text-lg">${d.description}</p>
+                    <div class="flex gap-4">
+                        <a href="https://wa.me/${d.phone}" class="flex-grow accent-gradient text-white py-6 rounded-3xl text-center font-black text-xl shadow-[0_10px_30px_rgba(59,130,246,0.3)]">קח אותי לשם</a>
+                        <button onclick="showPage('home')" class="glass px-8 rounded-3xl">✕</button>
+                    </div>
                 </div>
             `;
-            showPage('deal-detail');
+            showPage('deal-view');
         };
-
         loadDeals();
     </script>
 </body>
