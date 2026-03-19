@@ -3,103 +3,96 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>תפסתי! | חוויה נקייה, מהירה ומהודקת</title>
+    <title>תפסתי! | חוויה נקייה ומהודקת</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Assistant:wght@300;400;600;800&display=swap" rel="stylesheet">
     <style>
-        :root { --bg: #F8F9FA; --accent: #2563EB; --text-dark: #111827; --wa-green: #25D366; }
+        :root { --bg: #F8F9FA; --accent: #2563EB; --text-dark: #111827; }
         body { font-family: 'Assistant', sans-serif; background-color: var(--bg); color: var(--text-dark); margin: 0; }
-        
-        /* Layout */
-        .app-container { width: 94%; max-width: 1300px; margin: 0 auto; padding-bottom: 120px; }
+        .app-container { width: 94%; max-width: 1300px; margin: 0 auto; padding-bottom: 100px; }
 
-        /* Header ענק ומרשים */
-        .main-header { padding: 35px 0; background: white; border-bottom: 1px solid #f1f1f1; sticky; top: 0; z-index: 50; shadow-sm; }
-        .logo-box { background: var(--accent); color: white; width: 65px; height: 65px; border-radius: 22px; display: flex; align-items: center; justify-content: center; font-size: 42px; font-weight: 900; font-style: italic; shadow-xl; }
-        .brand-name { font-size: 50px; font-weight: 900; font-style: italic; letter-spacing: -3px; line-height: 0.8; color: var(--text-dark); }
+        /* Header מוגדל משמעותית */
+        .header-large { padding: 30px 0; background: white; border-bottom: 1px solid #f1f1f1; sticky; top: 0; z-index: 50; }
+        .logo-box-large { background: var(--accent); color: white; width: 60px; height: 60px; border-radius: 18px; display: flex; align-items: center; justify-content: center; font-size: 38px; font-weight: 900; font-style: italic; box-shadow: 0 10px 20px rgba(37,99,235,0.15); }
+        .brand-name-large { font-size: 42px; font-weight: 900; font-style: italic; letter-spacing: -2px; line-height: 1; }
 
         /* Card Design */
         .premium-card { 
-            background: #ffffff; border-radius: 24px; overflow: hidden; 
+            background: #ffffff; border-radius: 20px; overflow: hidden; 
             border: 1px solid #E5E7EB; transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
             display: flex; flex-direction: column; height: 100%; cursor: pointer;
         }
-        .premium-card:hover { transform: translateY(-8px); box-shadow: 0 30px 60px -15px rgba(0,0,0,0.1); border-color: var(--accent); }
-        
-        .deals-grid { display: grid; gap: 32px; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); }
+        .premium-card:hover { transform: translateY(-5px); box-shadow: 0 20px 40px -10px rgba(0,0,0,0.08); border-color: var(--accent); }
+        .deals-grid { display: grid; gap: 24px; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); }
 
-        .btn-primary { background: var(--accent); color: white; border-radius: 16px; font-weight: 800; transition: 0.3s; }
-        .badge-discount { background: #DC2626; color: white; padding: 4px 10px; border-radius: 10px; font-weight: 800; font-size: 13px; }
+        .btn-primary { background: var(--accent); color: white; border-radius: 12px; font-weight: 800; transition: 0.3s; }
+        .badge-discount { background: #DC2626; color: white; padding: 3px 8px; border-radius: 8px; font-weight: 800; font-size: 12px; }
 
-        /* Nav Dock - Mobile */
         @media (max-width: 768px) {
-            .brand-name { font-size: 38px; }
-            .logo-box { width: 55px; height: 55px; font-size: 32px; }
-            .nav-dock { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); width: 92%; background: rgba(255,255,255,0.9); backdrop-filter: blur(20px); border-radius: 25px; height: 80px; display: flex; justify-content: space-around; align-items: center; z-index: 100; border: 1px solid rgba(0,0,0,0.05); box-shadow: 0 15px 35px rgba(0,0,0,0.1); }
+            .nav-dock { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); width: 92%; background: rgba(255,255,255,0.9); backdrop-filter: blur(20px); border-radius: 20px; height: 70px; display: flex; justify-content: space-around; align-items: center; z-index: 100; border: 1px solid rgba(0,0,0,0.05); box-shadow: 0 10px 30px rgba(0,0,0,0.05); }
         }
 
-        .page { display: none; animation: fadeIn 0.4s ease-out; }
+        .page { display: none; animation: fadeIn 0.3s ease-out; }
         .page.active { display: block; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body>
 
-    <header class="main-header sticky top-0 bg-white/95 backdrop-blur-md z-50">
+    <header class="header-large sticky top-0 bg-white/95 backdrop-blur-md z-50">
         <div class="app-container flex justify-between items-center">
-            <div class="cursor-pointer flex items-center gap-5" onclick="showPage('home')">
-                <div class="logo-box">ת</div>
+            <div class="cursor-pointer flex items-center gap-4" onclick="showPage('home')">
+                <div class="logo-box-large">ת</div>
                 <div>
-                    <h1 class="brand-name">תפסתי<span class="text-blue-600">!</span></h1>
-                    <p class="text-[11px] text-gray-400 font-black uppercase tracking-[3px] mt-1 mr-1">Premium Deals</p>
+                    <h1 class="brand-name-large text-gray-950">תפסתי<span class="text-blue-600">!</span></h1>
+                    <p class="text-[11px] text-gray-400 font-bold uppercase tracking-widest mt-1">דילים ספונטניים להיום</p>
                 </div>
             </div>
-            
-            <nav class="hidden md:flex items-center gap-10 font-black text-lg text-gray-500">
-                <button onclick="showPage('home')" class="hover:text-blue-600 transition">הדילים</button>
+            <nav class="hidden md:flex items-center gap-10 font-bold text-base text-gray-600">
+                <button onclick="showPage('home')" class="hover:text-blue-600 transition">הדילים החמים</button>
                 <button onclick="showPage('search')" class="hover:text-blue-600 transition">חיפוש</button>
-                <a href="sup.html" class="btn-primary px-10 py-4 shadow-xl shadow-blue-100">כניסת ספקים</a>
+                <a href="sup.html" class="btn-primary px-8 py-3.5 shadow-md shadow-blue-100">כניסת ספקים</a>
             </nav>
         </div>
     </header>
 
     <div class="app-container">
         
-        <main id="home" class="page active pt-14">
-            <div class="mb-12 text-right">
-                <h2 class="text-5xl font-black text-gray-950 mb-3 leading-none tracking-tight">תפסו מהר.</h2>
-                <p class="text-xl text-gray-500 font-bold">דילים שפנויים להיום בלבד במחירים בלעדיים</p>
+        <main id="home" class="page active pt-10">
+            <div class="mb-10 text-right">
+                <h2 class="text-4xl font-extrabold text-gray-950 leading-none mb-2">תפסו מהר.</h2>
+                <p class="text-gray-500 font-medium italic">אטרקציות פנויות להיום במחירים בלעדיים</p>
             </div>
             <div id="deals-list" class="deals-grid">
                 </div>
         </main>
 
-        <main id="search" class="page pt-16">
-            <div class="max-w-3xl mx-auto text-center mb-16">
-                <h2 class="text-5xl font-black mb-10 tracking-tighter">לאן יוצאים היום?</h2>
-                <div class="relative shadow-2xl shadow-gray-100">
-                    <input type="text" id="searchInput" oninput="filterDeals()" placeholder="חפשו עיר, אטרקציה או ספק..." class="w-full p-8 pr-16 rounded-[30px] border-4 border-gray-50 focus:border-blue-500 outline-none text-2xl font-black transition-all bg-white">
-                    <span class="absolute right-7 top-9 text-3xl opacity-20">🔍</span>
+        <main id="search" class="page pt-12">
+            <div class="max-w-2xl mx-auto text-center mb-12">
+                <h2 class="text-4xl font-black mb-8 tracking-tight">לאן יוצאים היום?</h2>
+                <div class="relative">
+                    <input type="text" id="searchInput" oninput="filterDeals()" placeholder="חפשו עיר, אטרקציה או ספק..." class="w-full p-6 pr-16 rounded-2xl border-2 border-gray-100 focus:border-blue-400 outline-none text-xl font-bold transition-all bg-white shadow-xl shadow-gray-50">
+                    <span class="absolute right-6 top-6 text-2xl opacity-20">🔍</span>
                 </div>
             </div>
             <div id="search-results" class="deals-grid"></div>
         </main>
 
-        <main id="deal-view" class="page pt-8">
-            <div id="deal-detail-content" class="max-w-6xl mx-auto"></div>
+        <main id="deal-view" class="page pt-6">
+            <div id="deal-detail-content" class="max-w-5xl mx-auto"></div>
         </main>
 
     </div>
 
     <nav class="nav-dock md:hidden">
-        <button onclick="showPage('home')" class="flex flex-col items-center gap-1 font-black text-blue-600">
-            <span class="text-3xl">🏠</span><span class="text-[11px]">דילים</span>
+        <button onclick="showPage('home')" class="flex flex-col items-center gap-1 font-bold text-blue-600">
+            <span class="text-3xl">🏠</span><span class="text-[10px]">דילים</span>
         </button>
-        <button onclick="showPage('search')" class="flex flex-col items-center gap-1 font-black text-gray-400">
-            <span class="text-3xl">🔍</span><span class="text-[11px]">חיפוש</span>
+        <button onclick="showPage('search')" class="flex flex-col items-center gap-1 font-bold text-gray-400">
+            <span class="text-3xl">🔍</span><span class="text-[10px]">חיפוש</span>
         </button>
-        <a href="sup.html" class="flex flex-col items-center gap-1 font-black text-gray-400">
-            <span class="text-3xl">🔑</span><span class="text-[11px]">ספקים</span>
+        <a href="sup.html" class="flex flex-col items-center gap-1 font-bold text-gray-400">
+            <span class="text-3xl">🔑</span><span class="text-[10px]">ספקים</span>
         </a>
     </nav>
 
@@ -129,9 +122,14 @@
         async function loadDeals() {
             try {
                 const snap = await getDocs(query(collection(db, "offers"), where("status", "==", "active"), orderBy("createdAt", "desc")));
-                allDeals = [];
                 const list = document.getElementById('deals-list');
                 list.innerHTML = '';
+                allDeals = [];
+                
+                if (snap.empty) {
+                    list.innerHTML = '<div class="col-span-full text-center py-16 text-gray-400 font-bold italic">אין דילים פעילים.</div>';
+                    return;
+                }
                 
                 snap.forEach(doc => {
                     const d = { id: doc.id, ...doc.data() };
@@ -145,21 +143,23 @@
             const discount = Math.round(((d.originalPrice - d.discountPrice) / d.originalPrice) * 100);
             return `
                 <div class="premium-card shadow-sm" onclick="openDeal('${d.id}')">
-                    <div class="relative h-64 overflow-hidden">
-                        <img src="${d.imageUrl}" class="w-full h-full object-cover transition duration-700 hover:scale-110">
-                        ${discount > 0 ? `<div class="absolute top-4 left-4 badge-discount">-${discount}%</div>` : ''}
+                    <div class="relative h-52 overflow-hidden">
+                        <img src="${d.imageUrl}" class="w-full h-full object-cover transition duration-500 hover:scale-105">
+                        ${discount > 0 ? `<div class="absolute top-3 left-3 badge-discount">-${discount}%</div>` : ''}
                     </div>
-                    <div class="p-8 flex flex-col flex-grow bg-white">
-                        <h3 class="font-black text-2xl text-gray-950 leading-tight mb-2">${d.title}</h3>
-                        <div class="flex items-center gap-3 text-gray-400 font-bold text-xs uppercase tracking-widest mb-6">
-                            <span>📍 ${d.city}</span><span>•</span><span>⏰ ${d.time}</span>
-                        </div>
-                        <div class="mt-auto flex justify-between items-center pt-6 border-t border-gray-100">
-                            <div>
-                                <span class="text-3xl font-black text-blue-600">₪${d.discountPrice}</span>
-                                <span class="text-sm text-gray-300 line-through mr-2 font-bold">₪${d.originalPrice}</span>
+                    <div class="p-5 flex flex-col flex-grow bg-white text-right">
+                        <div class="mb-4">
+                            <h3 class="font-extrabold text-xl text-gray-950 leading-tight mb-1">${d.title}</h3>
+                            <div class="flex items-center gap-2.5 text-gray-400 font-bold text-xs uppercase">
+                                <span>📍 ${d.city}</span><span>•</span><span>⏰ ${d.time}</span>
                             </div>
-                            <button class="btn-primary px-6 py-2.5 text-xs shadow-md">תפסתי!</button>
+                        </div>
+                        <div class="mt-auto flex justify-between items-center pt-3 border-t border-gray-100">
+                            <div>
+                                <span class="text-2xl font-black text-blue-600">₪${d.discountPrice}</span>
+                                <span class="text-xs text-gray-300 line-through mr-1.5 font-bold">₪${d.originalPrice}</span>
+                            </div>
+                            <button class="btn-primary px-5 py-2 text-xs">תפסתי!</button>
                         </div>
                     </div>
                 </div>
@@ -172,7 +172,7 @@
             if (term === '') { results.innerHTML = ''; return; }
             
             const filtered = allDeals.filter(d => d.title.toLowerCase().includes(term) || d.city.toLowerCase().includes(term));
-            results.innerHTML = filtered.length ? filtered.map(d => renderCard(d)).join('') : '<p class="col-span-full text-center py-20 text-gray-400 font-black text-xl">לא נמצאו תוצאות...</p>';
+            results.innerHTML = filtered.length ? filtered.map(d => renderCard(d)).join('') : '<div class="col-span-full text-center py-16 text-gray-400 font-bold italic">לא נמצאו תוצאות...</div>';
         };
 
         window.openDeal = (id) => {
@@ -183,33 +183,30 @@
             const waMessage = encodeURIComponent(`היי, אני רוצה לתפוס את הדיל ל${d.title} ב-₪${d.discountPrice} שראיתי בתפסתי!`);
 
             document.getElementById('deal-detail-content').innerHTML = `
-                <div class="bg-white rounded-[50px] shadow-2xl border border-gray-100 flex flex-col md:flex-row p-8 md:p-14 gap-14">
-                    <div class="w-full md:w-1/2 h-[400px] md:h-[650px] rounded-[40px] overflow-hidden relative shadow-inner">
+                <div class="flex flex-col md:flex-row gap-10 bg-white p-6 md:p-10 rounded-3xl shadow-xl border border-gray-100 text-right">
+                    <div class="w-full md:w-1/2 h-80 md:h-[500px] rounded-2xl overflow-hidden shadow-inner">
                         <img src="${d.imageUrl}" class="w-full h-full object-cover">
-                        <button onclick="showPage('home')" class="absolute top-8 right-8 bg-white w-16 h-16 rounded-full flex items-center justify-center font-black text-3xl shadow-2xl">✕</button>
                     </div>
-                    <div class="w-full md:w-1/2 flex flex-col justify-center text-right">
-                        <button onclick="showPage('home')" class="text-blue-600 font-black text-xl mb-10">← חזרה לדילים</button>
-                        <h2 class="text-6xl md:text-7xl font-black mb-6 text-gray-950 leading-[0.9] tracking-tighter">${d.title}</h2>
-                        <p class="text-gray-400 text-3xl font-bold mb-12 italic">📍 ${d.city} • שעה ${d.time}</p>
+                    <div class="w-full md:w-1/2 flex flex-col justify-center">
+                        <button onclick="showPage('home')" class="mb-5 font-bold text-gray-400 hover:text-gray-950 transition flex items-center gap-2 text-sm">← חזרה לדילים</button>
+                        <h1 class="text-5xl font-black mb-4 leading-tight text-gray-950">${d.title}</h1>
+                        <p class="text-gray-400 text-xl font-bold mb-8 italic">📍 ${d.city} • שעה ${d.time}</p>
                         
-                        <div class="flex items-center gap-10 mb-12 p-12 bg-blue-50/50 rounded-[45px] border border-blue-100/50">
+                        <div class="flex items-center gap-6 mb-10 p-6 bg-blue-50 rounded-2xl border border-blue-100">
                             <div>
-                                <p class="text-sm text-blue-400 font-black uppercase mb-2 tracking-widest">מחיר תפסתי!</p>
-                                <span class="text-8xl font-black text-blue-600 leading-none">₪${d.discountPrice}</span>
+                                <p class="text-xs text-blue-400 font-black uppercase mb-1">מחיר תפסתי</p>
+                                <p class="text-5xl font-black text-blue-600">₪${d.discountPrice}</p>
                             </div>
-                            <div class="border-r border-blue-100 pr-10">
-                                <p class="text-sm text-gray-400 font-black uppercase mb-2">במקום</p>
-                                <span class="text-4xl line-through text-gray-300 font-bold">₪${d.originalPrice}</span>
+                            <div class="border-r border-blue-100 pr-6">
+                                <p class="text-xs text-gray-400 font-black uppercase mb-1">במקום</p>
+                                <p class="text-2xl line-through text-gray-300 font-bold">₪${d.originalPrice}</p>
                             </div>
                         </div>
 
-                        <p class="text-gray-600 text-3xl leading-relaxed mb-14 font-medium">${d.description || 'דיל בלעדי להורים ספונטניים! מומלץ ליצור קשר בהקדם.'}</p>
+                        <p class="text-gray-600 text-xl leading-relaxed mb-12 font-medium">${d.description || 'דיל בלעדי להורים ספונטניים!'}</p>
                         
-                        <a href="https://wa.me/${cleanPhone}?text=${waMessage}" target="_blank" 
-                           class="block w-full py-10 rounded-[35px] text-center font-black text-4xl shadow-2xl flex items-center justify-center gap-6 text-white transition transform active:scale-95"
-                           style="background-color: var(--wa-green); box-shadow: 0 25px 50px -10px rgba(37, 211, 102, 0.45);">
-                            <span class="text-5xl">💬</span> תפסתי מקום בווטסאפ
+                        <a href="https://wa.me/${cleanPhone}?text=${waMessage}" target="_blank" class="btn-primary block w-full py-6 text-center text-2xl shadow-xl shadow-blue-100 flex items-center justify-center gap-3" style="background-color: #25D366;">
+                            <span>💬</span> שלחו ווטסאפ ותפסו מקום
                         </a>
                     </div>
                 </div>
