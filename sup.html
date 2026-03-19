@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>SUP | Tafasti</title>
+    <title>SUP | Tafasti Dashboard</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Assistant:wght@400;700;800&display=swap" rel="stylesheet">
     <style>
         body { font-family: 'Assistant', sans-serif; background-color: #f1f5f9; padding-bottom: 90px; }
         .safe-area { max-width: 500px; margin: 0 auto; }
         .card { background: white; border-radius: 1.5rem; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
-        .input-group input { width: 100%; padding: 1rem; background: #f8fafc; border: 2px solid #f1f5f9; border-radius: 1rem; outline: none; }
+        .input-group input { width: 100%; padding: 1.2rem; background: #f8fafc; border: 2px solid #f1f5f9; border-radius: 1.2rem; outline: none; transition: 0.3s; }
         .input-group input:focus { border-color: #6366f1; background: white; }
         .page { display: none; }
         .page.active { display: block; animation: slideUp 0.3s ease; }
@@ -19,19 +19,34 @@
 </head>
 <body>
 
-    <div id="login-screen" class="fixed inset-0 bg-indigo-600 z-[100] flex items-center justify-center p-8 text-center">
-        <div>
-            <h1 class="text-5xl font-black text-white italic mb-4">Tafasti!</h1>
-            <p class="text-indigo-100 mb-10 text-xl font-bold underline">Supplier Portal</p>
-            <input type="email" id="loginEmail" placeholder="המייל שלך" class="w-full p-5 rounded-2xl mb-4 text-center text-xl outline-none">
-            <button onclick="login()" class="w-full bg-white text-indigo-600 py-5 rounded-2xl font-black text-xl shadow-2xl">היכנס למערכת</button>
+    <div id="login-screen" class="fixed inset-0 bg-slate-900 z-[100] flex items-center justify-center p-8 text-center">
+        <div class="w-full max-w-sm bg-white p-8 rounded-[2.5rem] shadow-2xl">
+            <h1 class="text-4xl font-black text-indigo-600 italic mb-2">Tafasti!</h1>
+            <p class="text-slate-400 mb-8 font-bold">אזור ניהול ספקים</p>
+            
+            <div id="step-1">
+                <p class="text-sm text-slate-600 mb-4 font-bold">הכנס קוד ספק לכניסה:</p>
+                <input type="text" id="providerInput" placeholder="למשל: SUP-XXXX" class="w-full p-4 rounded-xl mb-4 text-center border-2 border-slate-100 uppercase font-mono font-bold">
+                <button onclick="loginWithID()" class="w-full bg-indigo-600 text-white py-4 rounded-xl font-black text-lg mb-4">כניסה למערכת</button>
+                <button onclick="showRegister()" class="text-indigo-500 font-bold text-sm underline">אין לי קוד? הרשמה כספק חדש</button>
+            </div>
+
+            <div id="step-register" class="hidden">
+                <p class="text-sm text-slate-600 mb-4 font-bold">הרשמה מהירה (חד פעמי):</p>
+                <input type="email" id="regEmail" placeholder="כתובת אימייל" class="w-full p-4 rounded-xl mb-4 text-center border-2 border-slate-100">
+                <button onclick="registerNewProvider()" class="w-full bg-green-500 text-white py-4 rounded-xl font-black text-lg mb-2">צור קוד והתחל</button>
+                <button onclick="showLogin()" class="text-slate-400 font-bold text-sm underline">חזרה לכניסה</button>
+            </div>
         </div>
     </div>
 
     <div id="app" class="hidden safe-area">
-        <header class="p-6 bg-white flex justify-between items-center shadow-sm">
-            <h2 class="text-2xl font-black text-indigo-600">ניהול ספקים</h2>
-            <button onclick="location.reload()" class="text-red-400 font-bold text-sm">התנתק</button>
+        <header class="p-6 bg-white flex justify-between items-center shadow-sm sticky top-0 z-50">
+            <div>
+                <h2 class="text-xl font-black text-indigo-600">היי, ספק!</h2>
+                <p id="displayID" class="text-[10px] font-mono font-bold text-slate-300"></p>
+            </div>
+            <button onclick="logout()" class="text-red-400 font-bold text-xs bg-red-50 px-3 py-1 rounded-full">יציאה</button>
         </header>
 
         <main id="add" class="page active p-6">
@@ -44,9 +59,9 @@
                 </div>
                 <div class="grid grid-cols-2 gap-4">
                     <div class="input-group"><input type="number" id="orig" placeholder="מחיר רגיל" required></div>
-                    <div class="input-group"><input type="number" id="disc" placeholder="מחיר מוזל" required class="!bg-indigo-50 !border-indigo-100 font-bold"></div>
+                    <div class="input-group"><input type="number" id="disc" placeholder="מחיר מוזל" required class="!bg-indigo-50 font-bold"></div>
                 </div>
-                <div class="input-group"><input type="tel" id="phone" placeholder="טלפון / וואטסאפ" required></div>
+                <div class="input-group"><input type="tel" id="phone" placeholder="טלפון למימוש (וואטסאפ)" required></div>
                 <div class="input-group"><input type="url" id="img" placeholder="לינק לתמונה" required></div>
                 <textarea id="desc" placeholder="תיאור קצר..." class="w-full p-4 bg-white rounded-2xl border-2 border-slate-100 h-24"></textarea>
                 <button type="submit" class="w-full bg-indigo-600 text-white py-6 rounded-2xl font-black text-xl shadow-lg mt-4">פרסם דיל עכשיו 🔥</button>
@@ -54,25 +69,23 @@
         </main>
 
         <main id="manage" class="page p-6">
-            <h3 class="text-3xl font-extrabold mb-8">הדילים שלי</h3>
+            <h3 class="text-3xl font-extrabold mb-8 font-black">הדילים שלי</h3>
             <div id="my-list" class="space-y-4"></div>
         </main>
 
-        <nav class="fixed bottom-0 left-0 right-0 h-20 bg-white border-t flex justify-around items-center px-8 shadow-2xl">
+        <nav class="fixed bottom-0 left-0 right-0 h-20 bg-white border-t flex justify-around items-center px-8 shadow-2xl z-50">
             <button onclick="switchTab('add')" class="flex flex-col items-center gap-1 font-bold text-indigo-600">
-                <span class="text-2xl">➕</span>
-                <span class="text-xs">חדש</span>
+                <span class="text-2xl">➕</span><span class="text-xs">חדש</span>
             </button>
             <button onclick="switchTab('manage')" class="flex flex-col items-center gap-1 font-bold text-slate-400">
-                <span class="text-2xl">📋</span>
-                <span class="text-xs">שלי</span>
+                <span class="text-2xl">📋</span><span class="text-xs">שלי</span>
             </button>
         </nav>
     </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc, serverTimestamp, query, where } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc, serverTimestamp, query, where, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyCxMeoohFIuQcTJaAJ-Z4nd4Kmj79H1KYg",
@@ -85,21 +98,59 @@
 
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
-        let email = sessionStorage.getItem('sup_email');
+        let providerID = localStorage.getItem('tafasti_pid');
 
-        window.login = () => {
-            email = document.getElementById('loginEmail').value.toLowerCase();
-            if(email.includes('@')) {
-                sessionStorage.setItem('sup_email', email);
-                location.reload();
+        // Auth Logic
+        window.showRegister = () => { document.getElementById('step-1').classList.add('hidden'); document.getElementById('step-register').classList.remove('hidden'); }
+        window.showLogin = () => { document.getElementById('step-1').classList.remove('hidden'); document.getElementById('step-register').classList.add('hidden'); }
+
+        window.registerNewProvider = async () => {
+            const email = document.getElementById('regEmail').value.toLowerCase().trim();
+            if(!email.includes('@')) return alert('מייל לא תקין');
+            
+            // Check if email already registered
+            const q = query(collection(db, "providers"), where("email", "==", email));
+            const snap = await getDocs(q);
+            if(!snap.empty) {
+                alert('המייל כבר רשום. הקוד שלך הוא: ' + snap.docs[0].id);
+                return showLogin();
+            }
+
+            // Create new ID
+            const newID = 'SUP-' + Math.random().toString(36).substr(2, 4).toUpperCase();
+            await setDoc(doc(db, "providers", newID), { email: email, createdAt: serverTimestamp() });
+            
+            alert('ברוכים הבאים! קוד הספק שלך הוא: ' + newID + '\nשמור אותו לכניסה ממכשירים אחרים.');
+            providerID = newID;
+            saveAndStart();
+        }
+
+        window.loginWithID = async () => {
+            const input = document.getElementById('providerInput').value.toUpperCase().trim();
+            const docRef = doc(db, "providers", input);
+            const docSnap = await getDoc(docRef);
+
+            if (docSnap.exists()) {
+                providerID = input;
+                saveAndStart();
+            } else {
+                alert('קוד ספק לא נמצא במערכת');
             }
         }
 
-        if(email) {
+        function saveAndStart() {
+            localStorage.setItem('tafasti_pid', providerID);
             document.getElementById('login-screen').classList.add('hidden');
             document.getElementById('app').classList.remove('hidden');
+            document.getElementById('displayID').innerText = providerID;
+            loadMyDeals();
         }
 
+        if(providerID) saveAndStart();
+
+        window.logout = () => { localStorage.removeItem('tafasti_pid'); location.reload(); }
+
+        // App Logic
         window.switchTab = (tab) => {
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
             document.getElementById(tab).classList.add('active');
@@ -117,7 +168,7 @@
                 phone: document.getElementById('phone').value,
                 imageUrl: document.getElementById('img').value,
                 description: document.getElementById('desc').value,
-                providerEmail: email,
+                providerID: providerID,
                 status: "active",
                 createdAt: serverTimestamp()
             });
@@ -126,33 +177,23 @@
         });
 
         async function loadMyDeals() {
-            const q = query(collection(db, "offers"), where("providerEmail", "==", email));
+            const q = query(collection(db, "offers"), where("providerID", "==", providerID));
             const snap = await getDocs(q);
             const list = document.getElementById('my-list');
             list.innerHTML = '';
             snap.forEach(d => {
                 const data = d.data();
-                list.innerHTML += `
-                    <div class="card p-4 flex justify-between items-center">
-                        <div class="flex items-center gap-4">
-                            <img src="${data.imageUrl}" class="w-12 h-12 rounded-lg object-cover">
-                            <div>
-                                <h4 class="font-bold text-sm">${data.title}</h4>
-                                <p class="text-xs text-slate-400">₪${data.discountPrice}</p>
-                            </div>
-                        </div>
-                        <button onclick="del('${d.id}')" class="text-red-500 font-bold text-xs bg-red-50 px-3 py-2 rounded-lg">הסר</button>
+                list.innerHTML += `<div class="card p-4 flex justify-between items-center mb-4">
+                    <div class="flex items-center gap-4">
+                        <img src="${data.imageUrl}" class="w-12 h-12 rounded-lg object-cover">
+                        <div><h4 class="font-bold text-sm">${data.title}</h4><p class="text-xs text-indigo-600">₪${data.discountPrice}</p></div>
                     </div>
-                `;
+                    <button onclick="del('${d.id}')" class="text-red-500 font-bold text-xs bg-red-50 px-3 py-2 rounded-lg">הסר</button>
+                </div>`;
             });
         }
 
-        window.del = async (id) => {
-            if(confirm('למחוק?')) {
-                await deleteDoc(doc(db, "offers", id));
-                loadMyDeals();
-            }
-        }
+        window.del = async (id) => { if(confirm('למחוק?')) { await deleteDoc(doc(db, "offers", id)); loadMyDeals(); } }
     </script>
 </body>
 </html>
