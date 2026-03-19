@@ -2,98 +2,68 @@
 <html lang="he" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tafasti! | תפסתי לכם דיל ספונטני</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Tafasti! | בילוי ספונטני</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Assistant:wght@300;400;600;800&display=swap" rel="stylesheet">
-    
-    <script id="json-ld-data" type="application/ld+json"></script>
-
+    <link href="https://fonts.googleapis.com/css2?family=Assistant:wght@300;400;700;800&display=swap" rel="stylesheet">
     <style>
-        :root { --bg: #f5f7fa; }
-        body { font-family: 'Assistant', sans-serif; background-color: var(--bg); color: #0f172a; overflow-x: hidden; }
-        
-        /* 2026 Style: Glassmorphism & Depth */
-        .glass { background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.2); }
-        .depth-card { background: #fff; border-radius: 2rem; box-shadow: 0 20px 50px -10px rgba(0,0,0,0.05); transition: 0.4s; border: 1px solid rgba(0,0,0,0.02); }
-        .depth-card:hover { transform: translateY(-10px); box-shadow: 0 30px 60px -12px rgba(99, 102, 241, 0.12); border-color: rgba(99, 102, 241, 0.1); }
-        
-        /* Typography */
-        h1 { letter-spacing: -3px; line-height: 0.95; }
-        .gradient-text { background: linear-gradient(135deg, #6366f1, #a855f7, #ec4899); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        
-        /* Functional */
-        .tab-content { display: none; }
-        .tab-content.active { display: block; animation: fadeIn 0.5s; }
+        body { font-family: 'Assistant', sans-serif; background-color: #f8fafc; padding-bottom: 80px; }
+        .safe-area { max-width: 500px; margin: 0 auto; } /* Mobile focus */
+        .glass-nav { background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(15px); border-top: 1px solid rgba(0,0,0,0.05); }
+        .deal-card { border-radius: 2rem; overflow: hidden; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.05); transition: 0.3s; }
+        .page { display: none; animation: fadeIn 0.3s ease-out; }
+        .page.active { display: block; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        
-        /* Hot Badge Animation */
-        .hot-badge { position: absolute; top: 1rem; right: 1rem; background: rgba(239, 68, 68, 0.9); backdrop-filter: blur(5px); color: white; padding: 0.5rem 1rem; rounded-full font-bold text-sm; animation: pulse 2s infinite; }
-        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.7; } }
+        .nav-item.active { color: #6366f1; }
     </style>
 </head>
-<body class="p-0 m-0">
+<body>
 
-    <div class="fixed -top-40 -right-40 w-80 h-80 bg-indigo-100 rounded-full blur-[100px] -z-10"></div>
-    <div class="fixed -bottom-40 -left-40 w-80 h-80 bg-pink-100 rounded-full blur-[100px] -z-10"></div>
+    <header class="p-6 flex justify-between items-center bg-white shadow-sm sticky top-0 z-40">
+        <h1 class="text-3xl font-black italic text-indigo-600">Tafasti!</h1>
+        <div class="w-10 h-10 bg-indigo-50 rounded-full flex items-center justify-center">🔍</div>
+    </header>
 
-    <nav class="sticky top-4 z-50 max-w-7xl mx-auto px-4 mt-4">
-        <div class="glass p-4 rounded-3xl shadow-xl flex justify-between items-center">
-            <div class="text-3xl font-black italic cursor-pointer" onclick="showPage('home')">
-                <span class="text-indigo-600">Tafasti</span><span class="text-pink-500">!</span>
-            </div>
-            <div class="hidden md:flex gap-8 font-bold">
-                <a href="#" class="hover:text-indigo-600 transition" onclick="showPage('results')">כל האטרקציות</a>
-                <a href="sup.html" class="text-pink-600 hover:text-pink-700">כניסת ספקים</a>
-            </div>
-            <button class="bg-indigo-600 text-white px-6 py-3 rounded-full font-bold shadow-lg hover:bg-indigo-700 transition" onclick="showPage('results')">חפשו דיל</button>
-        </div>
-    </nav>
-
-    <main id="home" class="tab-content active px-4">
-        <section class="py-24 text-center max-w-5xl mx-auto">
-            <h1 class="text-6xl md:text-8xl font-black mb-6">נשארתם בלי תוכניות? <br><span class="gradient-text">תפסתי לכם דיל!</span></h1>
-            <p class="text-2xl text-slate-600 mb-12 max-w-3xl mx-auto font-light">אטרקציות, סדנאות וחדרי בריחה מהרגע להרגע. פשוט מגיעים, אומרים <span class="font-bold text-indigo-600">"Tafasti"</span> ונהנים ממחיר מיוחד.</p>
+    <div class="safe-area">
+        <main id="home" class="page active p-6">
+            <h2 class="text-4xl font-extrabold mb-2">היי, מה התוכניות?</h2>
+            <p class="text-slate-500 mb-8 font-bold">מצאנו 12 דילים שווים להיום בסביבה שלך</p>
             
-            <div class="max-w-3xl mx-auto relative depth-card p-2 bg-white flex items-center shadow-2xl">
-                <input type="text" id="searchInput" placeholder="איזו אטרקציה בא לכם היום? (למשל: פינת ליטוף)" class="flex-grow p-6 text-xl rounded-2xl border-none focus:ring-0 outline-none">
-                <button class="bg-black text-white px-10 py-5 rounded-2xl text-xl font-bold hover:scale-105 transition" onclick="showPage('results')">חיפוש</button>
+            <div id="home-deals" class="space-y-6">
+                <div class="h-64 bg-slate-100 animate-pulse rounded-[2rem]"></div>
             </div>
-        </section>
+        </main>
 
-        <section class="py-16 max-w-7xl mx-auto">
-            <div class="flex justify-between items-center mb-12 px-2">
-                <h2 class="text-4xl font-extrabold flex items-center gap-3">🔥 הדילים הכי חמים לעכשיו</h2>
-                <a href="#" onclick="showPage('results')" class="text-indigo-600 font-bold hover:underline">צפו בהכל ←</a>
-            </div>
-            <div id="home-deals-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
-                <div class="depth-card bg-white h-[450px] animate-pulse"></div>
-                <div class="depth-card bg-white h-[450px] animate-pulse"></div>
-                <div class="depth-card bg-white h-[450px] animate-pulse"></div>
-            </div>
-        </section>
-    </main>
+        <main id="explore" class="page p-6">
+            <h2 class="text-3xl font-black mb-6">חיפוש אטרקציה</h2>
+            <input type="text" placeholder="חפשו לפי עיר או סוג פעילות..." class="w-full p-5 rounded-2xl bg-white shadow-sm border-none mb-8 outline-none ring-2 ring-indigo-50">
+            <div id="explore-grid" class="grid grid-cols-1 gap-6"></div>
+        </main>
 
-    <main id="results" class="tab-content px-4 py-16 max-w-7xl mx-auto">
-        <h2 class="text-5xl font-black mb-12 leading-tight">כל האטרקציות <br><span class="gradient-text italic">הפנויות עכשיו</span></h2>
-        <div id="results-grid" class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-8"></div>
-    </main>
+        <main id="deal-view" class="page">
+            <div id="deal-detail-content"></div>
+        </main>
+    </div>
 
-    <main id="deal" class="tab-content px-4 py-16 max-w-6xl mx-auto">
-        <div id="deal-content"></div>
-    </main>
-
-    <footer class="mt-32 py-16 px-4 bg-slate-900 text-slate-300 rounded-t-[3rem]">
-        <div class="max-w-7xl mx-auto text-center">
-            <p class="text-slate-500 font-medium">© 2026 Tafasti. כל הזכויות שמורות. בילוי ספונטני נעים!</p>
-        </div>
-    </footer>
+    <nav class="fixed bottom-0 left-0 right-0 glass-nav h-20 flex justify-around items-center px-6 z-50">
+        <button onclick="showPage('home')" class="nav-item active flex flex-col items-center gap-1">
+            <span class="text-2xl">🏠</span>
+            <span class="text-xs font-bold">בית</span>
+        </button>
+        <button onclick="showPage('explore')" class="nav-item flex flex-col items-center gap-1">
+            <span class="text-2xl">🌍</span>
+            <span class="text-xs font-bold">גילוי</span>
+        </button>
+        <a href="sup.html" class="flex flex-col items-center gap-1 text-slate-400">
+            <span class="text-2xl">🏢</span>
+            <span class="text-xs font-bold">ספקים</span>
+        </a>
+    </nav>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getFirestore, collection, getDocs, query, where } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-        // Firebase Config (Keep this secure)
         const firebaseConfig = {
             apiKey: "AIzaSyCxMeoohFIuQcTJaAJ-Z4nd4Kmj79H1KYg",
             authDomain: "tafasti-20c41.firebaseapp.com",
@@ -106,116 +76,70 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        async function loadDeals() {
-            const q = query(collection(db, "offers"), where("status", "==", "active"));
-            const querySnapshot = await getDocs(q);
-            const homeGrid = document.getElementById('home-deals-grid');
-            const resultsGrid = document.getElementById('results-grid');
-            
-            homeGrid.innerHTML = '';
-            resultsGrid.innerHTML = '';
-
-            if (querySnapshot.empty) {
-                homeGrid.innerHTML = '<div class="text-center py-10 col-span-3 text-slate-400">אין דילים פעילים כרגע. בדקו שוב בקרוב!</div>';
-                return;
-            }
-
-            querySnapshot.forEach((docSnap) => {
-                const data = docSnap.data();
-                const dId = docSnap.id;
-                
-                // 2026 Deal Card Style
-                const cardHtml = `
-                    <div class="depth-card overflow-hidden group cursor-pointer" onclick="window.showDeal('${dId}')">
-                        <div class="relative overflow-hidden h-64">
-                            <img src="${data.imageUrl}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
-                            <div class="hot-badge">נותרו מקומות!</div>
-                        </div>
-                        <div class="p-8">
-                            <div class="flex justify-between items-start mb-4">
-                                <h3 class="text-2xl font-bold text-slate-900 tracking-tight leading-tight">${data.title}</h3>
-                                <div class="text-left bg-indigo-50 px-4 py-1 rounded-full border border-indigo-100 min-w-[100px]">
-                                    <span class="text-indigo-600 font-black text-2xl">₪${data.discountPrice}</span>
-                                </div>
-                            </div>
-                            <p class="text-slate-500 text-lg mb-6">${data.city} | <span class="font-bold text-black">${data.time}</span></p>
-                            <button class="w-full py-4 bg-slate-900 text-white rounded-2xl font-bold text-lg hover:bg-indigo-600 transition">לפרטים ומימוש →</button>
-                        </div>
-                    </div>
-                `;
-                homeGrid.innerHTML += cardHtml;
-                resultsGrid.innerHTML += cardHtml; // Reusing same card for results for simplicity
-            });
-        }
-
-        // Global Single Deal Viewer
-        window.showDeal = async (id) => {
-            const querySnapshot = await getDocs(collection(db, "offers"));
-            let data;
-            querySnapshot.forEach(doc => { if(doc.id === id) data = doc.data(); });
-
-            if(data) {
-                updateSEO(data);
-                const dealContent = document.getElementById('deal-content');
-                
-                // 2026 Deal Page Design: Clean & Action Oriented
-                dealContent.innerHTML = `
-                    <button class="mb-10 text-indigo-600 font-bold flex items-center gap-2" onclick="showPage('home')">← חזרה</button>
-                    
-                    <div class="grid md:grid-cols-5 gap-12 bg-white rounded-[3rem] p-12 shadow-2xl border border-white">
-                        <div class="md:col-span-3">
-                            <img src="${data.imageUrl}" class="w-full h-[450px] object-cover rounded-[2rem] shadow-xl">
-                        </div>
-                        
-                        <div class="md:col-span-2 flex flex-col justify-between">
-                            <div>
-                                <h1 class="text-5xl font-black mb-4 tracking-tighter leading-none">${data.title}</h1>
-                                <p class="text-xl text-slate-600 mb-8 italic flex items-center gap-2">📍 ${data.city}</p>
-                                <p class="text-lg text-slate-700 leading-relaxed">${data.description}</p>
-                            </div>
-                            
-                            <div class="bg-slate-50 border border-slate-100 p-8 rounded-3xl mt-10">
-                                <div class="flex justify-between items-center mb-6">
-                                    <span class="text-slate-500 font-medium">המחיר שלך דרך Tafasti</span>
-                                    <div class="text-center">
-                                        <span class="text-5xl font-black text-indigo-600">₪${data.discountPrice}</span>
-                                        <span class="block text-lg line-through text-slate-400 italic">₪${data.originalPrice}</span>
-                                    </div>
-                                </div>
-                                
-                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                    <a href="tel:${data.phone}" class="flex items-center justify-center gap-3 bg-indigo-600 text-white p-5 rounded-2xl text-xl font-bold shadow-lg shadow-indigo-200 hover:bg-indigo-700 transition">📞 חייגו למימוש</a>
-                                    <a href="https://wa.me/${data.phone}" target="_blank" class="flex items-center justify-center gap-3 bg-green-500 text-white p-5 rounded-2xl text-xl font-bold shadow-lg shadow-green-200 hover:bg-green-600 transition">💬 וואטסאפ לספק</a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                `;
-                window.showPage('deal');
-            }
-        };
-
-        function updateSEO(data) {
-            const script = document.getElementById('json-ld-data');
-            const ld = {
-                "@context": "https://schema.org/",
-                "@type": "Event",
-                "name": data.title,
-                "description": data.description,
-                "image": data.imageUrl,
-                "offers": { "@type": "Offer", "price": data.discountPrice, "priceCurrency": "ILS" }
-            };
-            script.textContent = JSON.stringify(ld);
-        }
-
-        window.showPage = (id) => {
-            document.querySelectorAll('.tab-content').forEach(p => p.classList.remove('active'));
-            document.getElementById(id).classList.add('active');
+        window.showPage = (pageId) => {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            document.getElementById(pageId).classList.add('active');
             window.scrollTo(0,0);
         };
 
-        // Initial Load
-        loadDeals();
+        async function loadData() {
+            const q = query(collection(db, "offers"), where("status", "==", "active"));
+            const snap = await getDocs(q);
+            const home = document.getElementById('home-deals');
+            const explore = document.getElementById('explore-grid');
+            home.innerHTML = '';
+            explore.innerHTML = '';
+
+            snap.forEach(doc => {
+                const data = doc.data();
+                const card = `
+                    <div class="deal-card bg-white" onclick="viewDeal('${doc.id}')">
+                        <div class="relative h-56">
+                            <img src="${data.imageUrl}" class="w-full h-full object-cover">
+                            <div class="absolute top-4 right-4 bg-red-500 text-white px-3 py-1 rounded-full text-xs font-bold">נותרו מקומות!</div>
+                        </div>
+                        <div class="p-5">
+                            <div class="flex justify-between items-start mb-2">
+                                <h3 class="text-xl font-bold">${data.title}</h3>
+                                <span class="text-indigo-600 font-black text-xl">₪${data.discountPrice}</span>
+                            </div>
+                            <p class="text-slate-400 text-sm font-bold">${data.city} • היום ב-${data.time}</p>
+                        </div>
+                    </div>
+                `;
+                home.innerHTML += card;
+                explore.innerHTML += card;
+            });
+        }
+
+        window.viewDeal = async (id) => {
+            const snap = await getDocs(collection(db, "offers"));
+            let d;
+            snap.forEach(doc => { if(doc.id === id) d = doc.data(); });
+            
+            document.getElementById('deal-detail-content').innerHTML = `
+                <div class="relative">
+                    <img src="${d.imageUrl}" class="w-full h-[40vh] object-cover">
+                    <button onclick="showPage('home')" class="absolute top-6 right-6 bg-white w-10 h-10 rounded-full shadow-lg flex items-center justify-center font-bold">✕</button>
+                </div>
+                <div class="p-8 bg-white -mt-10 rounded-t-[3rem] relative z-10">
+                    <h1 class="text-3xl font-black mb-4">${d.title}</h1>
+                    <div class="flex gap-4 mb-6">
+                        <span class="bg-indigo-50 text-indigo-600 px-4 py-2 rounded-xl font-bold">₪${d.discountPrice}</span>
+                        <span class="text-slate-400 line-through py-2 italic">₪${d.originalPrice}</span>
+                    </div>
+                    <p class="text-slate-600 leading-relaxed mb-10 text-lg">${d.description}</p>
+                    <div class="grid grid-cols-2 gap-4">
+                        <a href="tel:${d.phone}" class="bg-indigo-600 text-white p-5 rounded-2xl text-center font-bold text-xl">📞 חיוג</a>
+                        <a href="https://wa.me/${d.phone}" class="bg-green-500 text-white p-5 rounded-2xl text-center font-bold text-xl">💬 WhatsApp</a>
+                    </div>
+                </div>
+            `;
+            showPage('deal-view');
+        };
+
+        loadData();
     </script>
 </body>
 </html>
