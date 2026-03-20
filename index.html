@@ -10,8 +10,6 @@
         body { font-family: 'Assistant', sans-serif; background-color: #F9FAFB; }
         .city-tag.active { background-color: #2563EB; color: white; border-color: #2563EB; }
         .deal-card { transition: all 0.2s ease; cursor: pointer; }
-        
-        /* מודל צף וקומפקטי */
         .modal { 
             display: none; position: fixed; inset: 0; 
             background: rgba(0,0,0,0.7); z-index: 1000; 
@@ -32,16 +30,13 @@
 
     <div id="dealModal" class="modal" onclick="closeModal()">
         <div class="modal-content" onclick="event.stopPropagation()">
-            <button onclick="closeModal()" class="absolute top-4 left-4 bg-white/90 hover:bg-white text-gray-900 w-9 h-9 rounded-full flex items-center justify-center font-bold z-50 shadow-md transition-all">✕</button>
-            
+            <button onclick="closeModal()" class="absolute top-4 left-4 bg-white/90 hover:bg-white text-gray-900 w-9 h-9 rounded-full flex items-center justify-center font-bold z-50 shadow-md">✕</button>
             <img id="modalImg" src="" class="w-full h-48 object-cover">
-            
             <div class="p-6">
                 <div class="flex justify-between items-start mb-4">
                     <h2 id="modalTitle" class="text-xl font-extrabold text-gray-900 leading-tight"></h2>
-                    <span id="modalRegion" class="bg-blue-50 text-blue-600 px-2.5 py-1 rounded-lg text-[10px] font-black whitespace-nowrap mr-2 uppercase"></span>
+                    <span id="modalRegion" class="bg-blue-50 text-blue-600 px-2.5 py-1 rounded-lg text-[10px] font-black mr-2 uppercase"></span>
                 </div>
-
                 <div class="bg-gray-50 rounded-2xl p-4 mb-5 flex justify-between items-center border border-gray-100">
                     <div class="text-right">
                         <p class="text-[9px] text-gray-400 font-bold uppercase mb-1">מחיר דיל</p>
@@ -54,11 +49,9 @@
                         <span id="modalDate" class="text-[10px] text-gray-400 font-bold"></span>
                     </div>
                 </div>
-
                 <div class="max-h-32 overflow-y-auto no-scrollbar mb-6">
                     <p id="modalDesc" class="text-gray-600 text-sm leading-relaxed font-medium whitespace-pre-line text-right"></p>
                 </div>
-
                 <div id="modalAction"></div>
             </div>
         </div>
@@ -69,24 +62,23 @@
             <div class="flex justify-between items-center mb-4">
                 <h1 class="text-2xl font-black text-blue-600 italic">תפסתי!</h1>
                 <div class="flex gap-2">
-                    <button onclick="toggleExpired()" id="expBtn" class="px-3 py-2 rounded-xl font-bold text-[10px] bg-gray-100 text-gray-500">היסטוריה</button>
-                    <a href="sup.html" class="px-3 py-2 rounded-xl font-bold text-[10px] bg-blue-600 text-white shadow-sm">ספקים</a>
+                    <button onclick="toggleExpired()" id="expBtn" class="px-3 py-2 rounded-xl font-bold text-[10px] bg-gray-100 text-gray-500 transition-all border border-transparent">היסטוריית דילים</button>
+                    <a href="sup.html" class="px-3 py-2 rounded-xl font-bold text-[10px] bg-blue-600 text-white">ספקים</a>
                 </div>
             </div>
             
-            <input type="text" id="searchInput" placeholder="חפש דיל..." class="w-full bg-gray-100 border-none rounded-xl py-2.5 px-4 outline-none font-bold focus:ring-2 focus:ring-blue-500 transition-all text-sm mb-4">
+            <input type="text" id="searchInput" placeholder="חפש דיל פעיל..." class="w-full bg-gray-100 border-none rounded-xl py-2.5 px-4 outline-none font-bold focus:ring-2 focus:ring-blue-500 transition-all text-sm mb-4">
             
             <div class="flex gap-2 overflow-x-auto no-scrollbar">
                 <button onclick="filterBy('הכל')" class="city-tag active px-4 py-1.5 rounded-lg font-bold bg-white text-gray-400 border border-gray-100 whitespace-nowrap text-[11px]">הכל</button>
                 <button onclick="filterBy('מרכז')" class="city-tag px-4 py-1.5 rounded-lg font-bold bg-white text-gray-400 border border-gray-100 whitespace-nowrap text-[11px]">מרכז</button>
                 <button onclick="filterBy('צפון')" class="city-tag px-4 py-1.5 rounded-lg font-bold bg-white text-gray-400 border border-gray-100 whitespace-nowrap text-[11px]">צפון</button>
                 <button onclick="filterBy('דרום')" class="city-tag px-4 py-1.5 rounded-lg font-bold bg-white text-gray-400 border border-gray-100 whitespace-nowrap text-[11px]">דרום</button>
-                <button onclick="filterBy('השרון')" class="city-tag px-4 py-1.5 rounded-lg font-bold bg-white text-gray-400 border border-gray-100 whitespace-nowrap text-[11px]">השרון</button>
             </div>
         </div>
     </header>
 
-    <main class="max-w-6xl mx-auto p-5">
+    <main class="max-w-6xl mx-auto p-5 text-right">
         <div id="deals-container" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"></div>
     </main>
 
@@ -118,10 +110,10 @@
             document.getElementById('modalDisc').innerText = '₪' + deal.discountPrice;
             document.getElementById('modalOrig').innerText = '₪' + deal.originalPrice;
             document.getElementById('modalTime').innerText = deal.time || "--:--";
-            document.getElementById('modalDate').innerText = deal.expiryDate || "";
+            document.getElementById('modalDate').innerText = "תאריך: " + deal.expiryDate;
             document.getElementById('modalDesc').innerText = deal.description || "";
             
-            const todayStr = new Date().toISOString().split('T')[0];
+            const todayStr = new Date().toLocaleDateString('en-CA'); // YYYY-MM-DD
             const isExpired = deal.expiryDate < todayStr;
             const phone = deal.phone || "";
             const cleanPhone = phone.startsWith('0') ? '972' + phone.substring(1) : phone;
@@ -129,7 +121,7 @@
 
             document.getElementById('modalAction').innerHTML = `
                 <a href="${isExpired ? '#' : whatsappLink}" target="_blank" 
-                   class="flex items-center justify-center gap-2 w-full py-4 rounded-xl font-black text-lg shadow-lg transition-all ${isExpired ? 'bg-gray-100 text-gray-300 pointer-events-none' : 'bg-[#25D366] text-white'}">
+                   class="flex items-center justify-center gap-2 w-full py-4 rounded-xl font-black text-lg shadow-lg transition-all ${isExpired ? 'bg-gray-200 text-gray-400 pointer-events-none' : 'bg-[#25D366] text-white'}">
                    ${isExpired ? 'הדיל הסתיים' : 'תפסתי בוואטסאפ!'}
                 </a>
             `;
@@ -144,35 +136,47 @@
 
         function render() {
             const container = document.getElementById('deals-container');
-            const todayStr = new Date().toISOString().split('T')[0];
+            const todayStr = new Date().toLocaleDateString('en-CA'); // מחזיר YYYY-MM-DD
             container.innerHTML = '';
 
             let filtered = allDeals.filter(d => {
                 const matchSearch = d.title.toLowerCase().includes(document.getElementById('searchInput').value.toLowerCase());
                 const matchRegion = currentFilter === 'הכל' || d.region === currentFilter;
+                
                 const isDealExpired = d.expiryDate < todayStr;
-                return showExpired ? (matchSearch && matchRegion && isDealExpired) : (matchSearch && matchRegion && !isDealExpired);
+
+                // הלוגיקה הקשיחה:
+                if (showExpired) {
+                    // היסטוריה: רק מה שעבר זמנו
+                    return matchSearch && matchRegion && isDealExpired;
+                } else {
+                    // פעילים: רק מה שהיום או בעתיד
+                    return matchSearch && matchRegion && !isDealExpired;
+                }
             });
 
             if (filtered.length === 0) {
-                container.innerHTML = `<div class="col-span-full text-center py-20 text-gray-400 font-bold italic">לא נמצאו דילים...</div>`;
+                container.innerHTML = `<div class="col-span-full text-center py-20 text-gray-400 font-bold italic">אין דילים ${showExpired ? 'בהיסטוריה' : 'פעילים'} כרגע...</div>`;
                 return;
             }
 
             filtered.forEach(data => {
                 const isExpired = data.expiryDate < todayStr;
-                const whatsappLink = `https://wa.me/${data.phone}?text=היי`;
-
                 container.innerHTML += `
                     <div class="deal-card bg-white rounded-2xl overflow-hidden shadow-sm border border-gray-100 flex flex-col" onclick="openDeal('${data.id}')">
-                        <img src="${data.imageUrl}" class="w-full h-40 object-cover">
+                        <div class="relative h-40">
+                            <img src="${data.imageUrl}" class="w-full h-full object-cover">
+                            <div class="absolute top-2 right-2 bg-white/90 px-2 py-0.5 rounded text-[9px] font-black text-blue-600">${data.region}</div>
+                        </div>
                         <div class="p-4">
                             <h3 class="font-bold text-gray-900 line-clamp-2 text-sm mb-3 h-10">${data.title}</h3>
-                            <div class="flex justify-between items-center mb-4">
+                            <div class="flex justify-between items-center mb-3">
                                 <div><span class="text-lg font-black text-blue-600">₪${data.discountPrice}</span></div>
-                                <div class="text-[9px] font-black text-red-500 bg-red-50 px-2 py-1 rounded-md">עד: ${data.time}</div>
+                                <div class="text-[9px] font-black text-red-500">עד: ${data.time}</div>
                             </div>
-                            <button class="w-full ${isExpired ? 'bg-gray-100' : 'bg-[#25D366]'} text-white py-2 rounded-lg font-bold text-xs uppercase tracking-tight">לפרטים ותפיסה</button>
+                            <button class="w-full ${isExpired ? 'bg-gray-100 text-gray-400' : 'bg-[#25D366] text-white'} py-2 rounded-lg font-bold text-[11px] transition-all">
+                                ${isExpired ? 'דיל הסתיים' : 'לפרטים ותפיסה'}
+                            </button>
                         </div>
                     </div>
                 `;
@@ -187,7 +191,18 @@
 
         window.toggleExpired = () => {
             showExpired = !showExpired;
-            document.getElementById('expBtn').innerText = showExpired ? 'דילים פעילים' : 'היסטוריה';
+            const btn = document.getElementById('expBtn');
+            const search = document.getElementById('searchInput');
+            
+            if (showExpired) {
+                btn.innerText = 'חזרה לדילים פעילים';
+                btn.className = "px-3 py-2 rounded-xl font-bold text-[10px] bg-blue-100 text-blue-600 border border-blue-200";
+                search.placeholder = "חפש בהיסטוריה...";
+            } else {
+                btn.innerText = 'היסטוריית דילים';
+                btn.className = "px-3 py-2 rounded-xl font-bold text-[10px] bg-gray-100 text-gray-500 border border-transparent";
+                search.placeholder = "חפש דיל פעיל...";
+            }
             render();
         };
 
