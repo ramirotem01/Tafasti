@@ -2,50 +2,70 @@
 <html lang="he" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>מערכת ספקים | תפסתי!</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Assistant:wght@400;600;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Assistant:wght@300;400;600;800&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Assistant', sans-serif; background-color: #F9FAFB; }
-        .input-style { width: 100%; padding: 14px; border-radius: 16px; border: 2px solid #F3F4F6; outline: none; transition: 0.3s; }
-        .input-style:focus { border-color: #2563EB; }
-        .btn-primary { background: #2563EB; color: white; border-radius: 16px; font-weight: 800; cursor: pointer; border: none; transition: 0.3s; }
-        .btn-primary:hover { opacity: 0.9; transform: translateY(-1px); }
-        .hidden { display: none; }
+        :root { --bg: #F9FAFB; --accent: #2563EB; --text-dark: #111827; }
+        body { font-family: 'Assistant', sans-serif; background-color: var(--bg); color: var(--text-dark); margin: 0; }
+        .premium-card { background: white; border-radius: 24px; border: 1px solid #F3F4F6; box-shadow: 0 10px 30px -5px rgba(0,0,0,0.04); }
+        .input-style { 
+            width: 100%; padding: 14px 18px; border-radius: 16px; border: 2px solid #F3F4F6; 
+            outline: none; transition: 0.3s; font-weight: 600; background: white; text-align: center;
+        }
+        .input-style:focus { border-color: var(--accent); box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.05); }
+        .btn-primary { background: var(--accent); color: white; border-radius: 16px; font-weight: 800; transition: 0.3s; cursor: pointer; border: none; }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 10px 20px -5px rgba(37, 99, 235, 0.4); }
+        .page { display: none; }
+        .page.active { display: block; animation: fadeIn 0.4s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; } }
+        #custom-toast { position: fixed; top: 200px; left: 50%; transform: translateX(-50%) translateY(-100px); transition: 0.5s cubic-bezier(0.18, 0.89, 0.32, 1.28); z-index: 1000; opacity: 0; pointer-events: none; }
+        #custom-toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
     </style>
 </head>
 <body>
 
+    <div id="custom-toast" class="bg-gray-900 text-white px-8 py-4 rounded-2xl font-bold shadow-2xl flex items-center gap-3">
+        <span id="toast-icon">✨</span> <span id="toast-msg"></span>
+    </div>
+
     <div id="auth-screen" class="min-h-screen flex items-center justify-center p-6">
-        <div class="bg-white w-full max-w-md p-8 rounded-[32px] shadow-xl text-center border border-gray-100">
-            <h1 id="auth-title" class="text-3xl font-black mb-6 text-gray-900">כניסת ספקים</h1>
+        <div class="premium-card w-full max-w-md p-8 text-center">
+            <div class="flex justify-center mb-6">
+                <div class="bg-blue-600 text-white w-12 h-12 rounded-2xl flex items-center justify-center text-2xl font-black italic shadow-lg">ת</div>
+            </div>
+            
+            <h1 id="auth-title" class="text-3xl font-black mb-6">כניסת ספקים</h1>
 
             <div id="login-form" class="space-y-4">
-                <input type="text" id="pidInput" placeholder="הזן קוד ספק (למשל: TAF-1234)" class="input-style text-center font-bold tracking-widest uppercase">
-                <button onclick="loginWithCode()" class="btn-primary w-full py-4">כניסה למערכת</button>
-                <div class="flex justify-between px-2 text-xs font-bold text-gray-400">
-                    <button onclick="showSection('reg')" class="hover:text-blue-600 underline">ספק חדש? הירשם</button>
-                    <button onclick="showSection('forgot')" class="hover:text-blue-600 underline text-red-400">שכחתי קוד</button>
+                <input type="text" id="pidInput" placeholder="הזן קוד ספק" class="input-style uppercase tracking-widest">
+                <button onclick="login()" class="btn-primary w-full py-5 text-lg">כניסה למערכת</button>
+                <div class="flex justify-between px-2 text-xs font-extrabold text-gray-400">
+                    <button onclick="toggleAuth('reg')" class="hover:text-blue-600 underline">רישום ספק חדש</button>
+                    <button onclick="toggleAuth('forgot')" class="hover:text-blue-600 underline">שכחתי את הקוד</button>
                 </div>
             </div>
 
             <div id="reg-form" class="hidden space-y-4">
-                <input type="email" id="regEmail" placeholder="אימייל עסקי" class="input-style text-center">
-                <input type="password" id="regPass" placeholder="בחר סיסמה (הקוד שלך)" class="input-style text-center">
-                <button onclick="handleRegister()" class="btn-primary w-full py-4 bg-gray-900">צור חשבון וקבל קוד</button>
-                <button onclick="showSection('login')" class="text-xs text-gray-400 font-bold hover:underline">חזרה לכניסה</button>
+                <p class="text-gray-500 text-sm mb-4">הזן אימייל ונגריל עבורך קוד ספק</p>
+                <input type="email" id="regEmail" placeholder="אימייל עסקי" class="input-style">
+                <button onclick="register()" class="btn-primary w-full py-5 text-lg bg-gray-900">יצירת חשבון</button>
+                <button onclick="toggleAuth('login')" class="text-xs text-gray-400 font-extrabold hover:underline block w-full">חזרה לכניסה</button>
             </div>
 
             <div id="forgot-form" class="hidden space-y-4">
-                <p class="text-gray-500 text-sm mb-4 font-semibold text-right">הזן את המייל שאיתו נרשמת. נשלח לך לינק לאיפוס הקוד בצורה מאובטחת.</p>
-                <input type="email" id="forgotEmail" placeholder="האימייל שלך" class="input-style text-center">
-                <button onclick="sendRecoveryEmail()" class="btn-primary w-full py-4 bg-blue-500">שלח לינק לשחזור למייל</button>
-                <button onclick="showSection('login')" class="text-xs text-gray-400 font-bold hover:underline">חזרה לכניסה</button>
+                <p class="text-gray-500 text-sm mb-4">הזן את המייל ונשלח לך לינק לבחירת קוד חדש</p>
+                <input type="email" id="forgotEmail" placeholder="האימייל שלך" class="input-style">
+                <button onclick="recover()" class="btn-primary w-full py-5 text-lg bg-blue-500">שלח לינק לשחזור</button>
+                <button onclick="toggleAuth('login')" class="text-xs text-gray-400 font-extrabold hover:underline block w-full">חזרה לכניסה</button>
             </div>
-            
-            <div id="success-msg" class="hidden mt-4 p-4 bg-green-50 text-green-700 rounded-2xl text-sm font-bold">
-                הלינק נשלח! בדוק את תיבת המייל שלך (גם בספאם).
+
+            <div id="id-display" class="hidden mt-6 p-6 bg-blue-50 border-2 border-dashed border-blue-200 rounded-3xl">
+                <p class="text-blue-600 font-black text-xs mb-2 uppercase">נרשמת בהצלחה! הקוד שלך:</p>
+                <div id="new-id-val" class="text-3xl font-black text-gray-900 tracking-tighter mb-4"></div>
+                <p class="text-[10px] text-gray-400 mb-4">שמור את הקוד, הוא ישמש אותך לכניסה.</p>
+                <button onclick="location.reload()" class="btn-primary px-8 py-3 text-sm">הבנתי, למסך כניסה</button>
             </div>
         </div>
     </div>
@@ -55,77 +75,90 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { 
-            getAuth, 
-            signInWithEmailAndPassword, 
-            createUserWithEmailAndPassword, 
-            sendPasswordResetEmail,
-            onAuthStateChanged 
-        } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-        import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getFirestore, doc, setDoc, getDoc, collection, query, where, getDocs, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getAuth, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
-        const firebaseConfig = { 
-            apiKey: "AIzaSyCxMeoohFIuQcTJaAJ-Z4nd4Kmj79H1KYg", 
-            authDomain: "tafasti-20c41.firebaseapp.com", 
-            projectId: "tafasti-20c41", 
-            storageBucket: "tafasti-20c41.appspot.com", 
-            messagingSenderId: "457032202921", 
-            appId: "1:457032202921:web:8f397ae80d9506a66d07b8" 
-        };
-
+        const firebaseConfig = { apiKey: "AIzaSyCxMeoohFIuQcTJaAJ-Z4nd4Kmj79H1KYg", authDomain: "tafasti-20c41.firebaseapp.com", projectId: "tafasti-20c41", storageBucket: "tafasti-20c41.appspot.com", messagingSenderId: "457032202921", appId: "1:457032202921:web:8f397ae80d9506a66d07b8" };
         const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
         const db = getFirestore(app);
+        const auth = getAuth(app);
 
-        // פונקציית מעבר בין טפסים
-        window.showSection = (section) => {
-            const sections = ['login', 'reg', 'forgot'];
-            sections.forEach(s => document.getElementById(s + '-form').classList.add('hidden'));
-            document.getElementById(section + '-form').classList.remove('hidden');
-            document.getElementById('success-msg').classList.add('hidden');
+        function toast(msg, icon = '✨') {
+            const t = document.getElementById('custom-toast');
+            document.getElementById('toast-msg').innerText = msg;
+            document.getElementById('toast-icon').innerText = icon;
+            t.classList.add('show');
+            setTimeout(() => t.classList.remove('show'), 4000);
+        }
+
+        window.toggleAuth = (m) => {
+            ['login','reg','forgot'].forEach(x => document.getElementById(x+'-form').classList.add('hidden'));
+            document.getElementById(m+'-form').classList.remove('hidden');
         };
 
-        // שחזור קוד מאובטח - שליחה למייל
-        window.sendRecoveryEmail = async () => {
-            const email = document.getElementById('forgotEmail').value.trim();
-            if(!email) return alert('נא להזין אימייל');
-            
-            try {
-                await sendPasswordResetEmail(auth, email);
-                document.getElementById('success-msg').classList.remove('hidden');
-                document.getElementById('forgotEmail').value = '';
-            } catch (error) {
-                alert('שגיאה: וודא שהמייל תקין ורשום במערכת');
+        // כניסה עם קוד ספק
+        window.login = async () => {
+            const code = document.getElementById('pidInput').value.toUpperCase().trim();
+            if(!code) return toast('נא להזין קוד ספק', '⚠️');
+
+            const snap = await getDoc(doc(db, "providers", code));
+            if(snap.exists()) {
+                localStorage.setItem('tafasti_pid', code);
+                localStorage.setItem('tafasti_email', snap.data().email);
+                location.reload(); // יפעיל את startApp בטעינה
+            } else {
+                toast('קוד ספק לא קיים במערכת', '❌');
             }
         };
 
-        // רישום ספק חדש
-        window.handleRegister = async () => {
+        // רישום ספק חדש - הגרלת קוד
+        window.register = async () => {
             const email = document.getElementById('regEmail').value.trim();
-            const pass = document.getElementById('regPass').value;
-            if(!email || pass.length < 6) return alert('אימייל תקין וסיסמה של 6 תווים לפחות');
+            if(!email.includes('@')) return toast('כתובת מייל לא תקינה', '📧');
 
+            // בדיקה אם המייל כבר קיים
+            const q = query(collection(db, "providers"), where("email", "==", email));
+            const snap = await getDocs(q);
+            if(!snap.empty) return toast('המייל כבר רשום במערכת', '⚠️');
+
+            const newCode = 'TAF-' + Math.floor(1000 + Math.random() * 9000);
+            
             try {
-                const userCredential = await createUserWithEmailAndPassword(auth, email, pass);
-                const user = userCredential.user;
-                
-                // שמירת פרטי ספק ב-DB
-                await setDoc(doc(db, "providers", user.uid), {
+                await setDoc(doc(db, "providers", newCode), {
                     email: email,
-                    providerID: 'TAF-' + Math.floor(1000 + Math.random() * 9000)
+                    createdAt: serverTimestamp()
                 });
                 
-                alert('נרשמת בהצלחה! השתמש במייל ובקוד שבחרת לכניסה הבאה.');
-            } catch (e) { alert('שגיאה ברישום: המשתמש כבר קיים'); }
+                document.getElementById('reg-form').classList.add('hidden');
+                document.getElementById('id-display').classList.remove('hidden');
+                document.getElementById('new-id-val').innerText = newCode;
+                toast('חשבון נוצר בהצלחה!', '🎊');
+            } catch (e) {
+                toast('שגיאה ביצירת החשבון', '❌');
+            }
         };
 
-        // כניסה (כאן ה"קוד" הוא למעשה הסיסמה של Firebase Auth)
-        window.loginWithCode = async () => {
-            const pid = document.getElementById('pidInput').value.trim();
-            // כאן אפשר להוסיף לוגיקה שתומכת גם בכניסה עם אימייל וסיסמה
-            // או להשתמש בשיטה שבה ה-PID הוא מזהה הכניסה.
-            alert('כניסה מתבצעת...');
+        // שחזור - שליחת מייל לאיפוס סיסמה/קוד
+        window.recover = async () => {
+            const email = document.getElementById('forgotEmail').value.trim();
+            if(!email) return toast('נא להזין מייל לשחזור', '📧');
+
+            try {
+                await sendPasswordResetEmail(auth, email);
+                toast('לינק לשחזור נשלח למייל שלך', '📩');
+                setTimeout(() => toggleAuth('login'), 2000);
+            } catch (e) {
+                toast('המייל לא נמצא או שגיאת מערכת', '❌');
+            }
         };
+
+        // בדיקה אם מחובר
+        const savedPid = localStorage.getItem('tafasti_pid');
+        if(savedPid) {
+            // כאן תכניס את הפונקציה startApp() שמעלה את לוח הבקרה
+            document.getElementById('auth-screen').classList.add('hidden');
+            document.getElementById('app').classList.remove('hidden');
+        }
     </script>
 </body>
 </html>
