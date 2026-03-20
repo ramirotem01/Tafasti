@@ -8,22 +8,43 @@
     <link href="https://fonts.googleapis.com/css2?family=Assistant:wght@300;400;600;800&display=swap" rel="stylesheet">
     <style>
         body { font-family: 'Assistant', sans-serif; background-color: #F9FAFB; }
-        .deal-card { transition: all 0.3s ease; }
-        .deal-card:hover { transform: translateY(-5px); }
+        .deal-card { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+        .deal-card:hover { transform: translateY(-8px); shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1); }
+        .search-focus:focus-within { border-color: #2563EB; box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1); }
+        .hide-expired { display: none; }
     </style>
 </head>
 <body class="pb-20">
 
     <header class="bg-white border-b py-6 sticky top-0 z-50 shadow-sm">
-        <div class="max-w-6xl mx-auto px-6 flex justify-between items-center">
-            <h1 class="text-3xl font-black text-blue-600 italic tracking-tighter">תפסתי!</h1>
-            <a href="sup.html" class="text-sm font-bold text-gray-400 hover:text-blue-600 transition">כניסת ספקים ←</a>
+        <div class="max-w-6xl mx-auto px-6">
+            <div class="flex justify-between items-center mb-6">
+                <h1 class="text-3xl font-black text-blue-600 italic tracking-tighter">תפסתי!</h1>
+                <a href="sup.html" class="text-xs font-bold text-gray-400 hover:text-blue-600 transition bg-gray-50 px-3 py-2 rounded-xl">כניסת ספקים ←</a>
+            </div>
+            
+            <div class="flex flex-col md:flex-row gap-4">
+                <div class="relative flex-grow search-focus transition-all duration-300 border-2 border-gray-100 rounded-2xl bg-gray-50 px-4 py-1 flex items-center">
+                    <span class="ml-3 text-gray-400">🔍</span>
+                    <input type="text" id="searchInput" placeholder="חפש עיר, מלון או דיל..." class="w-full bg-transparent py-3 outline-none font-bold text-gray-700">
+                </div>
+                <div class="flex gap-2 overflow-x-auto pb-1 no-scrollbar">
+                    <button onclick="filterByCity('הכל')" class="city-tag bg-blue-600 text-white px-6 py-3 rounded-2xl font-bold whitespace-nowrap shadow-md shadow-blue-100 transition-all">הכל</button>
+                    <button onclick="filterByCity('אילת')" class="city-tag bg-white text-gray-500 border border-gray-100 px-6 py-3 rounded-2xl font-bold whitespace-nowrap hover:bg-gray-50 transition-all">אילת</button>
+                    <button onclick="filterByCity('ים המלח')" class="city-tag bg-white text-gray-500 border border-gray-100 px-6 py-3 rounded-2xl font-bold whitespace-nowrap hover:bg-gray-50 transition-all">ים המלח</button>
+                    <button onclick="filterByCity('צפון')" class="city-tag bg-white text-gray-500 border border-gray-100 px-6 py-3 rounded-2xl font-bold whitespace-nowrap hover:bg-gray-50 transition-all">צפון</button>
+                </div>
+            </div>
         </div>
     </header>
 
     <main class="max-w-6xl mx-auto p-6">
-        <div id="deals-container" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div id="deals-container" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 text-center">
+            <div class="col-span-full py-20">
+                <div class="animate-spin w-10 h-10 border-4 border-blue-600 border-t-transparent rounded-full mx-auto mb-4"></div>
+                <p class="font-bold text-gray-400">מחפש עבורך את הדילים הכי שווים...</p>
             </div>
+        </div>
     </main>
 
     <script type="module">
@@ -34,42 +55,61 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
+        let allDeals = [];
+
         async function loadDeals() {
             const container = document.getElementById('deals-container');
             const q = query(collection(db, "offers"), orderBy("createdAt", "desc"));
             const snap = await getDocs(q);
             
+            allDeals = [];
+            snap.forEach(doc => allDeals.push({ id: doc.id, ...doc.data() }));
+            renderDeals(allDeals);
+        }
+
+        function renderDeals(deals) {
+            const container = document.getElementById('deals-container');
             container.innerHTML = '';
-            snap.forEach(doc => {
-                const data = doc.data();
-                
-                // יצירת לינק לוואטסאפ
+            
+            const today = new Date().toISOString().split('T')[0];
+
+            const filtered = deals.filter(d => {
+                // סינון דילים שפג תוקפם
+                return d.expiryDate >= today;
+            });
+
+            if (filtered.length === 0) {
+                container.innerHTML = '<div class="col-span-full py-20 text-gray-400 font-bold">לא נמצאו דילים פעילים כרגע... שווה לחזור מאוחר יותר!</div>';
+                return;
+            }
+
+            filtered.forEach(data => {
                 const phone = data.phone || "";
                 const cleanPhone = phone.startsWith('0') ? '972' + phone.substring(1) : phone;
                 const whatsappMsg = encodeURIComponent(`היי, אני מעוניין בדיל: ${data.title} שפורסם בתפסתי!`);
                 const whatsappLink = `https://wa.me/${cleanPhone}?text=${whatsappMsg}`;
 
                 container.innerHTML += `
-                    <div class="deal-card bg-white rounded-[32px] overflow-hidden shadow-sm border border-gray-100 flex flex-col h-full">
-                        <div class="relative">
-                            <img src="${data.imageUrl}" class="w-full h-56 object-cover" onerror="this.src='https://placehold.co/400x300?text=תפסתי!'">
-                            <div class="absolute top-4 right-4 bg-white/90 backdrop-blur-md text-blue-600 px-4 py-1 rounded-2xl text-xs font-black shadow-sm">
+                    <div class="deal-card bg-white rounded-[32px] overflow-hidden shadow-sm border border-gray-100 flex flex-col h-full group">
+                        <div class="relative overflow-hidden">
+                            <img src="${data.imageUrl}" class="w-full h-56 object-cover transform group-hover:scale-110 transition-transform duration-500" onerror="this.src='https://placehold.co/400x300?text=תפסתי!'">
+                            <div class="absolute top-4 right-4 bg-white/95 backdrop-blur-md text-blue-600 px-4 py-1.5 rounded-2xl text-xs font-black shadow-sm border border-blue-50">
                                 ${data.city}
                             </div>
                         </div>
                         <div class="p-6 flex flex-col flex-grow">
                             <h3 class="text-2xl font-black mb-2 text-gray-900 leading-tight">${data.title}</h3>
-                            <p class="text-gray-500 text-sm mb-6 line-clamp-2">${data.description || ''}</p>
+                            <p class="text-gray-400 text-sm mb-6 line-clamp-2 font-medium">${data.description || ''}</p>
                             
                             <div class="mt-auto">
-                                <div class="flex justify-between items-end mb-6">
+                                <div class="flex justify-between items-end mb-6 bg-blue-50/50 p-4 rounded-2xl border border-blue-50">
                                     <div>
-                                        <p class="text-[10px] text-gray-400 font-bold uppercase tracking-wider">מחיר תפסתי</p>
+                                        <p class="text-[10px] text-blue-400 font-bold uppercase tracking-wider mb-1">מחיר תפסתי</p>
                                         <span class="text-3xl font-black text-blue-600 tracking-tighter">₪${data.discountPrice}</span>
-                                        <span class="text-sm text-gray-300 line-through mr-2">₪${data.originalPrice}</span>
+                                        <span class="text-sm text-gray-300 line-through mr-1 font-bold">₪${data.originalPrice}</span>
                                     </div>
-                                    <div class="text-[10px] font-black text-red-500 bg-red-50 px-3 py-1.5 rounded-xl border border-red-100">
-                                        עד: ${data.time}
+                                    <div class="text-[10px] font-black text-white bg-red-500 px-3 py-1.5 rounded-xl shadow-lg shadow-red-100 animate-pulse">
+                                        תופס עד: ${data.time}
                                     </div>
                                 </div>
 
@@ -84,6 +124,40 @@
                 `;
             });
         }
+
+        // פונקציית חיפוש
+        document.getElementById('searchInput').addEventListener('input', (e) => {
+            const term = e.target.value.toLowerCase();
+            const filtered = allDeals.filter(d => 
+                d.title.toLowerCase().includes(term) || 
+                d.city.toLowerCase().includes(term) || 
+                (d.description && d.description.toLowerCase().includes(term))
+            );
+            renderDeals(filtered);
+        });
+
+        // פונקציית סינון לפי עיר
+        window.filterByCity = (city) => {
+            // עדכון עיצוב הכפתורים
+            document.querySelectorAll('.city-tag').forEach(btn => {
+                if(btn.innerText === city) {
+                    btn.classList.replace('bg-white', 'bg-blue-600');
+                    btn.classList.replace('text-gray-500', 'text-white');
+                    btn.classList.add('shadow-md', 'shadow-blue-100');
+                } else {
+                    btn.classList.replace('bg-blue-600', 'bg-white');
+                    btn.classList.replace('text-white', 'text-gray-500');
+                    btn.classList.remove('shadow-md', 'shadow-blue-100');
+                }
+            });
+
+            if(city === 'הכל') {
+                renderDeals(allDeals);
+            } else {
+                const filtered = allDeals.filter(d => d.city === city);
+                renderDeals(filtered);
+            }
+        };
 
         loadDeals();
     </script>
