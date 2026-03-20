@@ -12,7 +12,7 @@
         .premium-card { background: white; border-radius: 24px; border: 1px solid #F3F4F6; box-shadow: 0 10px 30px -5px rgba(0,0,0,0.04); }
         .input-style { 
             width: 100%; padding: 14px 18px; border-radius: 16px; border: 2px solid #F3F4F6; 
-            outline: none; transition: 0.3s; font-weight: 600; background: white;
+            outline: none; transition: 0.3s; font-weight: 600; background: white; appearance: none;
         }
         .input-style:focus { border-color: var(--accent); box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.05); }
         .btn-primary { background: var(--accent); color: white; border-radius: 16px; font-weight: 800; transition: 0.3s; cursor: pointer; border: none; }
@@ -40,9 +40,9 @@
             <div id="login-form" class="space-y-4">
                 <input type="text" id="pidInput" placeholder="מספר ספק (לדוגמה: TAF-1234)" class="input-style text-center uppercase tracking-widest">
                 <button onclick="login()" class="btn-primary w-full py-5 text-lg">כניסה למערכת</button>
-                <div class="flex justify-between px-2">
-                    <button onclick="toggleAuth('reg')" class="text-xs text-blue-600 font-extrabold hover:underline">רישום חדש</button>
-                    <button onclick="toggleAuth('forgot')" class="text-xs text-gray-400 font-extrabold hover:underline">שחזור קוד למייל</button>
+                <div class="flex justify-between px-2 text-xs font-extrabold">
+                    <button onclick="toggleAuth('reg')" class="text-blue-600 hover:underline">רישום חדש</button>
+                    <button onclick="toggleAuth('forgot')" class="text-gray-400 hover:underline">שחזור קוד למייל</button>
                 </div>
             </div>
 
@@ -70,7 +70,7 @@
         <header class="bg-white border-b border-gray-100 py-6 sticky top-0 z-50">
             <div class="max-w-5xl mx-auto px-6 flex justify-between items-center">
                 <div class="flex items-center gap-4">
-                    <a href="index.html" class="bg-blue-50 p-3 rounded-xl hover:bg-blue-100 transition flex items-center gap-2" title="חזרה לתפסתי">
+                    <a href="index.html" class="bg-blue-50 p-3 rounded-xl hover:bg-blue-100 transition flex items-center gap-2">
                         <span>🏠</span>
                         <span class="text-blue-600 font-bold text-xs hidden sm:inline">חזרה לדילים</span>
                     </a>
@@ -89,8 +89,15 @@
                     <h3 class="text-2xl font-black mb-6">פרסום דיל חדש</h3>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div class="space-y-4">
-                            <input type="text" id="title" placeholder="כותרת הדיל" class="input-style">
-                            <input type="text" id="city" placeholder="עיר" class="input-style">
+                            <input type="text" id="title" placeholder="כותרת הדיל (לדוגמה: לילה במלון דרומא)" class="input-style">
+                            <select id="region" class="input-style">
+                                <option value="" disabled selected>בחר אזור בארץ</option>
+                                <option value="מרכז">מרכז</option>
+                                <option value="צפון">צפון</option>
+                                <option value="דרום">דרום</option>
+                                <option value="שפלה">שפלה</option>
+                                <option value="ירושלים">ירושלים</option>
+                            </select>
                             <div class="grid grid-cols-2 gap-4">
                                 <input type="number" id="orig" placeholder="מחיר רגיל" class="input-style">
                                 <input type="number" id="disc" placeholder="מחיר דיל" class="input-style !border-blue-100">
@@ -99,11 +106,11 @@
                         <div class="space-y-4">
                             <div class="grid grid-cols-2 gap-4">
                                 <input type="date" id="expiryDate" class="input-style">
-                                <input type="time" id="time" class="input-style">
+                                <input type="time" id="time" class="input-style" value="20:00">
                             </div>
                             <input type="text" id="imgUrl" placeholder="קישור לתמונה (URL)" class="input-style">
                             <input type="tel" id="phone" placeholder="טלפון לוואטספ (לדוגמה: 0501234567)" class="input-style">
-                            <textarea id="desc" placeholder="תיאור קצר..." class="input-style h-20 resize-none"></textarea>
+                            <textarea id="desc" placeholder="תיאור קצר של הדיל..." class="input-style h-20 resize-none"></textarea>
                         </div>
                     </div>
                     <button onclick="publish()" id="pubBtn" class="btn-primary w-full py-5 mt-8 text-xl">פרסם דיל עכשיו 🚀</button>
@@ -145,26 +152,12 @@
             setTimeout(() => t.classList.remove('show'), 3000);
         }
 
-        async function sendMail(to, subject, body) {
-            try {
-                await addDoc(collection(db, "mail"), {
-                    to: to,
-                    message: {
-                        subject: subject,
-                        text: body,
-                        html: `<div dir="rtl" style="font-family: Assistant, Arial;"><h3>שלום רב,</h3><p>${body}</p></div>`
-                    }
-                });
-            } catch (e) { console.error("Mail queue error", e); }
-        }
-
         window.login = async () => {
             const input = document.getElementById('pidInput').value.toUpperCase().trim();
             if(!input) return toast('נא להזין קוד', '⚠️');
             const snap = await getDoc(doc(db, "providers", input));
-            if(snap.exists()) { 
-                pid = input; userEmail = snap.data().email; startApp(); 
-            } else toast('מספר ספק לא תקין', '❌');
+            if(snap.exists()) { pid = input; userEmail = snap.data().email; startApp(); } 
+            else toast('מספר ספק לא תקין', '❌');
         };
 
         window.register = async () => {
@@ -172,38 +165,24 @@
             if(!email.includes('@')) return toast('מייל לא תקין', '📧');
             const newID = 'TAF-' + Math.floor(1000 + Math.random() * 9000);
             await setDoc(doc(db, "providers", newID), { email: email, createdAt: serverTimestamp() });
-            await sendMail(email, "קוד הספק שלך בתפסתי!", `ברוכים הבאים לתפסתי! קוד הספק שלך לכניסה למערכת הוא: ${newID}`);
             pid = newID; userEmail = email;
             document.getElementById('reg-form').classList.add('hidden');
             document.getElementById('id-display').classList.remove('hidden');
             document.getElementById('new-id-val').innerText = newID;
         };
 
-        window.recover = async () => {
-            const email = document.getElementById('forgotEmail').value.trim();
-            const q = query(collection(db, "providers"), where("email", "==", email));
-            const snap = await getDocs(q);
-            if(!snap.empty) {
-                const code = snap.docs[0].id;
-                await sendMail(email, "שחזור קוד ספק - תפסתי", `שלום, ביקשת לשחזר את הקוד שלך. הקוד הוא: ${code}`);
-                toast('הקוד נשלח למייל שלך!', '📧');
-                toggleAuth('login');
-            } else toast('המייל לא נמצא במערכת', '❌');
-        };
-
         window.publish = async () => {
             const title = document.getElementById('title').value;
+            const region = document.getElementById('region').value;
             const phone = document.getElementById('phone').value;
-            if(!title || !phone) return toast('חובה להזין כותרת וטלפון', '⚠️');
+            if(!title || !region || !phone) return toast('חובה למלא כותרת, אזור וטלפון', '⚠️');
 
             const b = document.getElementById('pubBtn');
             b.innerText = 'מפרסם...'; b.disabled = true;
             
             try {
                 await addDoc(collection(db, "offers"), {
-                    title: title,
-                    city: document.getElementById('city').value,
-                    phone: phone,
+                    title, region, phone,
                     time: document.getElementById('time').value,
                     expiryDate: document.getElementById('expiryDate').value,
                     originalPrice: Number(document.getElementById('orig').value),
@@ -211,7 +190,6 @@
                     imageUrl: document.getElementById('imgUrl').value,
                     description: document.getElementById('desc').value,
                     providerID: pid,
-                    status: "active",
                     createdAt: serverTimestamp()
                 });
                 toast('הדיל פורסם בהצלחה!', '🚀');
@@ -220,28 +198,22 @@
             b.disabled = false; b.innerText = 'פרסם דיל עכשיו 🚀';
         };
 
-window.startApp = () => {
-    localStorage.setItem('tafasti_pid', pid);
-    localStorage.setItem('tafasti_email', userEmail);
-    document.getElementById('auth-screen').classList.add('hidden');
-    document.getElementById('app').classList.remove('hidden');
-    document.getElementById('user-email-display').innerText = userEmail;
-    document.getElementById('expiryDate').valueAsDate = new Date();
-    // -----------------------
-
-    loadMyDeals();
-}
+        window.startApp = () => {
+            localStorage.setItem('tafasti_pid', pid);
+            localStorage.setItem('tafasti_email', userEmail);
+            document.getElementById('auth-screen').classList.add('hidden');
+            document.getElementById('app').classList.remove('hidden');
+            document.getElementById('user-email-display').innerText = userEmail;
+            document.getElementById('expiryDate').valueAsDate = new Date();
+            loadMyDeals();
+        }
 
         if(pid && userEmail) window.startApp();
         window.logout = () => { localStorage.clear(); location.reload(); };
         window.toggleAuth = (m) => {
-            ['login','reg','forgot','id-display'].forEach(x => {
-                const el = document.getElementById(x+'-form');
-                if(el) el.classList.add('hidden');
-            });
+            ['login','reg','forgot'].forEach(x => document.getElementById(x+'-form').classList.add('hidden'));
             document.getElementById(m+'-form').classList.remove('hidden');
         };
-
         window.switchTab = (id) => {
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
             document.getElementById(id).classList.add('active');
@@ -264,7 +236,7 @@ window.startApp = () => {
                 </div>`;
             });
         }
-        window.del = async (id) => { if(confirm('למחוק את הדיל?')) { await deleteDoc(doc(db, "offers", id)); loadMyDeals(); } };
+        window.del = async (id) => { if(confirm('למחוק?')) { await deleteDoc(doc(db, "offers", id)); loadMyDeals(); } };
     </script>
 </body>
 </html>
