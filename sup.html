@@ -50,14 +50,14 @@
             <div id="reg-form" class="hidden space-y-4">
                 <input type="email" id="regEmail" placeholder="אימייל עסקי" class="input-style">
                 <button onclick="register()" class="btn-primary w-full py-5 text-lg bg-gray-900">יצירת חשבון</button>
-                <button onclick="toggleAuth('login')" class="text-xs text-gray-400 font-extrabold hover:underline block w-full">חזרה</button>
+                <button onclick="toggleAuth('login')" class="text-xs text-gray-400 font-extrabold hover:underline block w-full text-center">חזרה</button>
             </div>
 
             <div id="forgot-form" class="hidden space-y-4 text-right">
                 <p class="text-gray-500 text-sm mb-4">הזן אימייל ונשלח לך את הקוד שלך</p>
                 <input type="email" id="forgotEmail" placeholder="האימייל שלך" class="input-style">
                 <button onclick="recover()" class="btn-primary w-full py-5 text-lg bg-blue-500">שלח קוד למייל</button>
-                <button onclick="toggleAuth('login')" class="text-xs text-gray-400 font-extrabold hover:underline block w-full text-center">חזרה</button>
+                <button onclick="toggleAuth('login')" class="text-xs text-gray-400 font-extrabold hover:underline block w-full text-center text-center">חזרה</button>
             </div>
 
             <div id="id-display" class="hidden mt-6 p-6 bg-blue-50 border-2 border-dashed border-blue-200 rounded-3xl">
@@ -116,7 +116,6 @@
                                 <p id="fileNameDisplay" class="text-[10px] text-gray-400 mt-1 mr-2 font-bold"></p>
                             </div>
 
-                            <input type="text" id="imgUrl" placeholder="או הדבק קישור לתמונה" class="input-style">
                             <textarea id="desc" placeholder="תיאור קצר..." class="input-style h-20 resize-none text-right"></textarea>
                         </div>
                     </div>
@@ -216,7 +215,15 @@
             document.getElementById('auth-screen').classList.add('hidden');
             document.getElementById('app').classList.remove('hidden');
             document.getElementById('user-email-display').innerText = userEmail;
-            document.getElementById('expiryDate').valueAsDate = new Date();
+            
+            // הגדרת תאריך להיום ושעה אחת קדימה מהשעה הנוכחית
+            const now = new Date();
+            document.getElementById('expiryDate').valueAsDate = now;
+            
+            const hourAhead = new Date(now.getTime() + (60 * 60 * 1000));
+            const timeString = hourAhead.toTimeString().slice(0, 5);
+            document.getElementById('time').value = timeString;
+
             loadMyDeals();
         };
 
@@ -236,14 +243,13 @@
             const title = document.getElementById('title').value;
             const region = document.getElementById('region').value;
             const fileInput = document.getElementById('fileInput');
-            const manualUrl = document.getElementById('imgUrl').value;
 
             if(!title || !region) return toast('מלא כותרת ואזור', '⚠️');
 
             b.innerText = 'מפרסם...'; b.disabled = true;
 
             try {
-                let finalUrl = manualUrl || "https://tinokotnet.files.wordpress.com/2016/03/girl-812482_640.jpg";
+                let finalUrl = "https://tinokotnet.files.wordpress.com/2016/03/girl-812482_640.jpg";
 
                 if (fileInput.files.length > 0) {
                     b.innerText = 'מעלה תמונה...';
@@ -264,7 +270,6 @@
                 });
                 
                 toast('פורסם בהצלחה!', '🚀');
-                // איפוס שדות העלאה
                 fileInput.value = "";
                 document.getElementById('fileNameDisplay').innerText = "";
                 switchTab('list');
