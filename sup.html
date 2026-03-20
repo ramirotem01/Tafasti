@@ -15,18 +15,13 @@
             outline: none; transition: 0.3s; font-weight: 600; background: white;
         }
         .input-style:focus { border-color: var(--accent); box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.05); }
-        input::-webkit-outer-spin-button, input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
-        .btn-primary { background: var(--accent); color: white; border-radius: 16px; font-weight: 800; transition: 0.3s; cursor: pointer; }
+        .btn-primary { background: var(--accent); color: white; border-radius: 16px; font-weight: 800; transition: 0.3s; cursor: pointer; border: none; }
         .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 10px 20px -5px rgba(37, 99, 235, 0.4); }
         .page { display: none; }
         .page.active { display: block; animation: fadeIn 0.4s ease; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; } }
         #custom-toast { position: fixed; top: 20px; left: 50%; transform: translateX(-50%) translateY(-100px); transition: 0.5s ease; z-index: 1000; }
         #custom-toast.show { transform: translateX(-50%) translateY(0); }
-        
-        /* עיצוב כפתור העלאת תמונה */
-        .file-upload { position: relative; overflow: hidden; display: inline-block; width: 100%; }
-        .file-upload input[type=file] { position: absolute; left: 0; top: 0; opacity: 0; cursor: pointer; height: 100%; width: 100%; }
     </style>
 </head>
 <body>
@@ -75,7 +70,10 @@
         <header class="bg-white border-b border-gray-100 py-6 sticky top-0 z-50">
             <div class="max-w-5xl mx-auto px-6 flex justify-between items-center">
                 <div class="flex items-center gap-4">
-                    <a href="index.html" class="bg-gray-100 p-3 rounded-xl hover:bg-gray-200 transition" title="חזרה לדף הראשי">🏠</a>
+                    <a href="index.html" class="bg-blue-50 p-3 rounded-xl hover:bg-blue-100 transition flex items-center gap-2" title="חזרה לתפסתי">
+                        <span>🏠</span>
+                        <span class="text-blue-600 font-bold text-xs hidden sm:inline">חזרה לדילים</span>
+                    </a>
                     <div>
                         <h2 class="text-xl font-black leading-none">לוח בקרה</h2>
                         <p id="user-email-display" class="text-[11px] text-blue-600 font-bold mt-1 tracking-wide uppercase"></p>
@@ -103,12 +101,7 @@
                                 <input type="date" id="expiryDate" class="input-style">
                                 <input type="time" id="time" class="input-style">
                             </div>
-                            <div class="file-upload">
-                                <div id="upload-status" class="input-style text-center text-gray-400 border-dashed border-2 flex items-center justify-center gap-2">
-                                    <span>📸</span> <span id="file-label">לחץ להעלאת תמונה (עד 1MB)</span>
-                                </div>
-                                <input type="file" id="imgFile" accept="image/*">
-                            </div>
+                            <input type="text" id="imgUrl" placeholder="קישור לתמונה (URL)" class="input-style">
                             <textarea id="desc" placeholder="תיאור קצר..." class="input-style h-20 resize-none"></textarea>
                         </div>
                     </div>
@@ -135,16 +128,14 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc, serverTimestamp, query, where, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
-        import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-storage.js";
 
+        // ה-Config המקורי שלך שעובד ל-Firestore
         const firebaseConfig = { apiKey: "AIzaSyCxMeoohFIuQcTJaAJ-Z4nd4Kmj79H1KYg", authDomain: "tafasti-20c41.firebaseapp.com", projectId: "tafasti-20c41", storageBucket: "tafasti-20c41.appspot.com", messagingSenderId: "457032202921", appId: "1:457032202921:web:8f397ae80d9506a66d07b8" };
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
-        const storage = getStorage(app);
 
         let pid = localStorage.getItem('tafasti_pid');
         let userEmail = localStorage.getItem('tafasti_email');
-        let uploadedImgUrl = "";
 
         function toast(msg, icon = '✨') {
             const t = document.getElementById('custom-toast');
@@ -154,46 +145,23 @@
             setTimeout(() => t.classList.remove('show'), 3000);
         }
 
-        // ניהול העלאת קובץ
-        document.getElementById('imgFile').addEventListener('change', async (e) => {
-            const file = e.target.files[0];
-            if(!file) return;
-
-            if(file.size > 1024 * 1024) {
-                toast('הקובץ גדול מדי! נא להעלות עד 1MB', '❌');
-                e.target.value = '';
-                return;
-            }
-
-            const label = document.getElementById('file-label');
-            label.innerText = "מעלה תמונה...";
-            
-            const storageRef = ref(storage, `offers/${Date.now()}_${file.name}`);
-            try {
-                const snapshot = await uploadBytes(storageRef, file);
-                uploadedImgUrl = await getDownloadURL(snapshot.ref);
-                label.innerText = "התמונה הועלתה בהצלחה ✅";
-                document.getElementById('upload-status').classList.replace('text-gray-400', 'text-green-600');
-            } catch (err) {
-                toast('שגיאה בהעלאת תמונה', '❌');
-                label.innerText = "לחץ להעלאת תמונה (עד 1MB)";
-            }
-        });
-
-        // פונקציית עזר לשליחת מייל דרך Firestore (דורש Trigger Email Extension)
+        // פונקציית שליחת מייל אמיתית דרך Firestore
         async function sendMail(to, subject, body) {
-            await addDoc(collection(db, "mail"), {
-                to: to,
-                message: {
-                    subject: subject,
-                    text: body,
-                    html: `<b>${body}</b>`
-                }
-            });
+            try {
+                await addDoc(collection(db, "mail"), {
+                    to: to,
+                    message: {
+                        subject: subject,
+                        text: body,
+                        html: `<div dir="rtl" style="font-family: Arial;"><h3>שלום רב,</h3><p>${body}</p></div>`
+                    }
+                });
+            } catch (e) { console.error("Mail queue error", e); }
         }
 
         window.login = async () => {
             const input = document.getElementById('pidInput').value.toUpperCase().trim();
+            if(!input) return toast('נא להזין קוד', '⚠️');
             const snap = await getDoc(doc(db, "providers", input));
             if(snap.exists()) { 
                 pid = input; userEmail = snap.data().email; startApp(); 
@@ -207,7 +175,8 @@
             const newID = 'TAF-' + Math.floor(1000 + Math.random() * 9000);
             await setDoc(doc(db, "providers", newID), { email: email, createdAt: serverTimestamp() });
             
-            await sendMail(email, "קוד הספק שלך בתפסתי!", `שלום, קוד הספק שלך הוא: ${newID}`);
+            // שליחה למייל על אמת
+            await sendMail(email, "קוד הספק שלך בתפסתי!", `ברוכים הבאים לתפסתי! קוד הספק שלך לכניסה למערכת הוא: ${newID}`);
             
             pid = newID; userEmail = email;
             document.getElementById('reg-form').classList.add('hidden');
@@ -228,19 +197,21 @@
         };
 
         window.publish = async () => {
-            if(!uploadedImgUrl) return toast('נא להעלות תמונה', '📸');
+            const title = document.getElementById('title').value;
+            if(!title) return toast('נא להזין כותרת', '⚠️');
+
             const b = document.getElementById('pubBtn');
             b.innerText = 'מפרסם...'; b.disabled = true;
             
             try {
                 await addDoc(collection(db, "offers"), {
-                    title: document.getElementById('title').value,
+                    title: title,
                     city: document.getElementById('city').value,
                     time: document.getElementById('time').value,
                     expiryDate: document.getElementById('expiryDate').value,
                     originalPrice: Number(document.getElementById('orig').value),
                     discountPrice: Number(document.getElementById('disc').value),
-                    imageUrl: uploadedImgUrl,
+                    imageUrl: document.getElementById('imgUrl').value, // חזרה ל-URL
                     description: document.getElementById('desc').value,
                     providerID: pid,
                     status: "active",
@@ -265,7 +236,10 @@
         if(pid && userEmail) window.startApp();
         window.logout = () => { localStorage.clear(); location.reload(); };
         window.toggleAuth = (m) => {
-            ['login','reg','forgot','id-display'].forEach(x => document.getElementById(x+'-form')?.classList.add('hidden'));
+            ['login','reg','forgot','id-display'].forEach(x => {
+                const el = document.getElementById(x+'-form');
+                if(el) el.classList.add('hidden');
+            });
             document.getElementById(m+'-form').classList.remove('hidden');
         };
 
@@ -287,14 +261,14 @@
                 const data = d.data();
                 list.innerHTML += `<div class="premium-card p-4 flex justify-between items-center border-r-4 border-r-blue-500">
                     <div class="flex items-center gap-4">
-                        <img src="${data.imageUrl}" class="w-16 h-16 rounded-xl object-cover">
+                        <img src="${data.imageUrl}" class="w-16 h-16 rounded-xl object-cover bg-gray-100" onerror="this.src='https://placehold.co/100x100?text=No+Img'">
                         <div><h4 class="font-bold text-gray-900">${data.title}</h4><p class="text-blue-600 font-black">₪${data.discountPrice}</p></div>
                     </div>
                     <button onclick="del('${d.id}')" class="p-3 text-red-400">🗑️</button>
                 </div>`;
             });
         }
-        window.del = async (id) => { if(confirm('למחוק?')) { await deleteDoc(doc(db, "offers", id)); loadMyDeals(); } };
+        window.del = async (id) => { if(confirm('למחוק את הדיל?')) { await deleteDoc(doc(db, "offers", id)); loadMyDeals(); } };
     </script>
 </body>
 </html>
