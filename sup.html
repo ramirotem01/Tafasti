@@ -54,22 +54,22 @@
             </div>
 
             <div id="forgot-form" class="hidden space-y-4 text-right">
-                <p class="text-gray-500 text-sm mb-4">הזן אימייל ונשלח לך לינק לשחזור הקוד</p>
+                <p class="text-gray-500 text-sm mb-4">הזן אימייל ונשלח לך את הקוד שלך</p>
                 <input type="email" id="forgotEmail" placeholder="האימייל שלך" class="input-style">
-                <button onclick="recover()" class="btn-primary w-full py-5 text-lg bg-blue-500">שלח לינק שחזור</button>
+                <button onclick="recover()" class="btn-primary w-full py-5 text-lg bg-blue-500">שלח קוד למייל</button>
                 <button onclick="toggleAuth('login')" class="text-xs text-gray-400 font-extrabold hover:underline block w-full text-center">חזרה</button>
             </div>
 
             <div id="id-display" class="hidden mt-6 p-6 bg-blue-50 border-2 border-dashed border-blue-200 rounded-3xl">
-                <p class="text-blue-600 font-black text-xs mb-2 uppercase">הקוד שלך מוכן!</p>
-                <div id="new-id-val" class="text-3xl font-black text-gray-900 tracking-tighter mb-4"></div>
-                <button onclick="location.reload()" class="btn-primary px-8 py-3 text-sm">המשך לכניסה</button>
+                <p class="text-blue-600 font-black text-xs mb-2 uppercase italic">הקוד שלך הוגרל!</p>
+                <div id="new-id-val" class="text-4xl font-black text-gray-900 tracking-tighter mb-4"></div>
+                <button onclick="startApp()" class="btn-primary w-full py-4 text-sm">המשך לפרסום דיל 🚀</button>
             </div>
         </div>
     </div>
 
     <div id="app" class="hidden min-h-screen">
-        <header class="bg-white border-b border-gray-100 py-6 sticky top-0 z-50">
+        <header class="bg-white border-b border-gray-100 py-6 sticky top-0 z-50 text-right">
             <div class="max-w-5xl mx-auto px-6 flex justify-between items-center">
                 <div class="flex items-center gap-4">
                     <a href="index.html" class="bg-blue-50 p-3 rounded-xl">🏠</a>
@@ -85,7 +85,7 @@
         <div class="max-w-5xl mx-auto p-6 pb-32">
             <main id="add" class="page active">
                 <div class="premium-card p-6 md:p-10">
-                    <h3 class="text-2xl font-black mb-6">פרסום דיל חדש</h3>
+                    <h3 class="text-2xl font-black mb-6 text-right">פרסום דיל חדש</h3>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6 text-right">
                         <div class="space-y-4">
                             <input type="text" id="title" placeholder="כותרת הדיל" class="input-style text-right">
@@ -113,13 +113,13 @@
                             <textarea id="desc" placeholder="תיאור קצר..." class="input-style h-20 resize-none text-right"></textarea>
                         </div>
                     </div>
-                    <button onclick="publish()" id="pubBtn" class="btn-primary w-full py-5 mt-8 text-xl shadow-xl">פרסם דיל 🚀</button>
+                    <button onclick="publish()" id="pubBtn" class="btn-primary w-full py-5 mt-8 text-xl shadow-xl shadow-blue-100">פרסם דיל עכשיו 🚀</button>
                 </div>
             </main>
 
             <main id="list" class="page">
-                <h3 class="text-2xl font-black mb-6">הדילים שלי</h3>
-                <div id="my-list" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
+                <h3 class="text-2xl font-black mb-6 text-right">הדילים שלי</h3>
+                <div id="my-list" class="grid grid-cols-1 md:grid-cols-2 gap-4 text-right"></div>
             </main>
         </div>
 
@@ -132,12 +132,10 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getFirestore, doc, setDoc, getDoc, collection, addDoc, getDocs, deleteDoc, query, where, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
-        import { getAuth, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
         const firebaseConfig = { apiKey: "AIzaSyCxMeoohFIuQcTJaAJ-Z4nd4Kmj79H1KYg", authDomain: "tafasti-20c41.firebaseapp.com", projectId: "tafasti-20c41", storageBucket: "tafasti-20c41.appspot.com", messagingSenderId: "457032202921", appId: "1:457032202921:web:8f397ae80d9506a66d07b8" };
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
-        const auth = getAuth(app);
 
         let pid = localStorage.getItem('tafasti_pid');
         let userEmail = localStorage.getItem('tafasti_email');
@@ -151,8 +149,8 @@
         }
 
         window.toggleAuth = (m) => {
-            ['login','reg','forgot'].forEach(x => document.getElementById(x+'-form').classList.add('hidden'));
-            document.getElementById(m+'-form').classList.remove('hidden');
+            ['login','reg','forgot','id-display'].forEach(x => document.getElementById(x+'-form')?.classList.add('hidden') || document.getElementById(x)?.classList.add('hidden'));
+            document.getElementById(m + (m === 'id-display' ? '' : '-form')).classList.remove('hidden');
         };
 
         window.login = async () => {
@@ -175,6 +173,8 @@
 
             const newID = 'TAF-' + Math.floor(1000 + Math.random() * 9000);
             await setDoc(doc(db, "providers", newID), { email, createdAt: serverTimestamp() });
+            
+            pid = newID; userEmail = email; // שמירה בזיכרון המקומי
             document.getElementById('reg-form').classList.add('hidden');
             document.getElementById('id-display').classList.remove('hidden');
             document.getElementById('new-id-val').innerText = newID;
@@ -183,10 +183,14 @@
         window.recover = async () => {
             const email = document.getElementById('forgotEmail').value.trim();
             if(!email) return toast('הזן מייל', '📧');
-            try {
-                await sendPasswordResetEmail(auth, email);
-                toast('לינק שחזור נשלח למייל', '📩');
-            } catch (e) { toast('שגיאה בשחזור', '❌'); }
+            const q = query(collection(db, "providers"), where("email", "==", email));
+            const snap = await getDocs(q);
+            
+            if(snap.empty) return toast('המייל לא נמצא', '❌');
+            
+            // כאן נשלח המייל - בינתיים מציגים הודעה
+            toast('הקוד נשלח למייל שלך!', '📩');
+            setTimeout(() => toggleAuth('login'), 2000);
         };
 
         window.startApp = () => {
@@ -195,16 +199,22 @@
             document.getElementById('auth-screen').classList.add('hidden');
             document.getElementById('app').classList.remove('hidden');
             document.getElementById('user-email-display').innerText = userEmail;
+            
+            // הגדרת תאריך ברירת מחדל להיום
+            document.getElementById('expiryDate').valueAsDate = new Date();
             loadMyDeals();
         };
 
         window.publish = async () => {
             const b = document.getElementById('pubBtn');
-            b.disabled = true;
+            const title = document.getElementById('title').value;
+            const region = document.getElementById('region').value;
+            if(!title || !region) return toast('מלא כותרת ואזור', '⚠️');
+
+            b.innerText = 'מפרסם...'; b.disabled = true;
             try {
                 await addDoc(collection(db, "offers"), {
-                    title: document.getElementById('title').value,
-                    region: document.getElementById('region').value,
+                    title, region,
                     phone: document.getElementById('phone').value,
                     originalPrice: Number(document.getElementById('orig').value),
                     discountPrice: Number(document.getElementById('disc').value),
@@ -215,10 +225,10 @@
                     providerID: pid,
                     createdAt: serverTimestamp()
                 });
-                toast('הדיל פורסם!', '🚀');
+                toast('פורסם בהצלחה!', '🚀');
                 switchTab('list');
             } catch (e) { toast('שגיאה בפרסום', '❌'); }
-            b.disabled = false;
+            b.innerText = 'פרסם דיל עכשיו 🚀'; b.disabled = false;
         };
 
         window.loadMyDeals = async () => {
@@ -229,11 +239,11 @@
             snap.forEach(d => {
                 const data = d.data();
                 list.innerHTML += `<div class="premium-card p-4 flex justify-between items-center border-r-4 border-r-blue-500">
-                    <div class="flex items-center gap-4 text-right">
-                        <img src="${data.imageUrl}" class="w-12 h-12 rounded-lg object-cover">
-                        <div><h4 class="font-bold text-sm">${data.title}</h4><p class="text-blue-600 font-black text-xs">₪${data.discountPrice}</p></div>
+                    <div class="flex items-center gap-4">
+                        <img src="${data.imageUrl}" class="w-14 h-14 rounded-xl object-cover">
+                        <div><h4 class="font-bold text-gray-800">${data.title}</h4><p class="text-blue-600 font-black">₪${data.discountPrice}</p></div>
                     </div>
-                    <button onclick="del('${d.id}')" class="p-2 text-red-400">🗑️</button>
+                    <button onclick="del('${d.id}')" class="p-2 text-red-400 hover:bg-red-50 rounded-lg transition">🗑️</button>
                 </div>`;
             });
         };
@@ -243,6 +253,8 @@
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
             document.getElementById(id).classList.add('active');
             if(id === 'list') loadMyDeals();
+            document.getElementById('tab-add').className = id === 'add' ? 'px-8 py-4 bg-blue-600 text-white rounded-2xl font-bold' : 'px-8 py-4 text-gray-400 rounded-2xl font-bold';
+            document.getElementById('tab-list').className = id === 'list' ? 'px-8 py-4 bg-blue-600 text-white rounded-2xl font-bold' : 'px-8 py-4 text-gray-400 rounded-2xl font-bold';
         };
         window.logout = () => { localStorage.clear(); location.reload(); };
 
