@@ -9,38 +9,24 @@
     <style>
         :root { --bg: #F9FAFB; --accent: #2563EB; --text-dark: #111827; }
         body { font-family: 'Assistant', sans-serif; background-color: var(--bg); color: var(--text-dark); margin: 0; }
-        
-        /* כרטיסיות ועיצוב כללי */
         .premium-card { background: white; border-radius: 24px; border: 1px solid #F3F4F6; box-shadow: 0 10px 30px -5px rgba(0,0,0,0.04); }
         .input-style { 
             width: 100%; padding: 14px 18px; border-radius: 16px; border: 2px solid #F3F4F6; 
-            outline: none; transition: all 0.3s; font-weight: 600; background: white;
+            outline: none; transition: 0.3s; font-weight: 600; background: white;
         }
         .input-style:focus { border-color: var(--accent); box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.05); }
-        
-        /* ביטול חצים במספרי מחיר */
         input::-webkit-outer-spin-button, input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
-        input[type=number] { -moz-appearance: textfield; }
-
-        .btn-primary { 
-            background: var(--accent); color: white; border-radius: 16px; font-weight: 800; 
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 10px 20px -5px rgba(37, 99, 235, 0.4); opacity: 0.95; }
-
-        /* ניווט */
-        .nav-dock { background: rgba(255,255,255,0.8); backdrop-filter: blur(15px); border-radius: 24px; border: 1px solid rgba(0,0,0,0.05); }
-
+        .btn-primary { background: var(--accent); color: white; border-radius: 16px; font-weight: 800; transition: 0.3s; cursor: pointer; }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 10px 20px -5px rgba(37, 99, 235, 0.4); }
         .page { display: none; }
         .page.active { display: block; animation: fadeIn 0.4s ease; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-
-        /* תיבת הודעה מעוצבת (במקום Alert) */
-        #custom-toast { 
-            position: fixed; top: 20px; left: 50%; transform: translateX(-50%) translateY(-100px);
-            transition: 0.5s ease; z-index: 1000;
-        }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; } }
+        #custom-toast { position: fixed; top: 20px; left: 50%; transform: translateX(-50%) translateY(-100px); transition: 0.5s ease; z-index: 1000; }
         #custom-toast.show { transform: translateX(-50%) translateY(0); }
+        
+        /* עיצוב כפתור העלאת תמונה */
+        .file-upload { position: relative; overflow: hidden; display: inline-block; width: 100%; }
+        .file-upload input[type=file] { position: absolute; left: 0; top: 0; opacity: 0; cursor: pointer; height: 100%; width: 100%; }
     </style>
 </head>
 <body>
@@ -51,36 +37,36 @@
 
     <div id="auth-screen" class="min-h-screen flex items-center justify-center p-6">
         <div class="premium-card w-full max-w-md p-8 text-center">
-            <div class="bg-blue-600 text-white w-12 h-12 rounded-2xl flex items-center justify-center text-2xl font-black italic mx-auto mb-4 shadow-lg shadow-blue-200">ת</div>
+            <div class="flex justify-center mb-6">
+                <div class="bg-blue-600 text-white w-12 h-12 rounded-2xl flex items-center justify-center text-2xl font-black italic shadow-lg">ת</div>
+            </div>
             <h1 class="text-3xl font-black mb-2">כניסת ספקים</h1>
-            <p class="text-gray-400 font-bold text-sm mb-8">נהלו את הדילים שלכם בקלות</p>
             
             <div id="login-form" class="space-y-4">
-                <input type="text" id="pidInput" placeholder="הזינו מספר ספק" class="input-style text-center uppercase tracking-widest">
+                <input type="text" id="pidInput" placeholder="מספר ספק (לדוגמה: TAF-1234)" class="input-style text-center uppercase tracking-widest">
                 <button onclick="login()" class="btn-primary w-full py-5 text-lg">כניסה למערכת</button>
                 <div class="flex justify-between px-2">
-                    <button onclick="toggleAuth('reg')" class="text-xs text-blue-600 font-extrabold hover:underline">רישום ספק חדש</button>
-                    <button onclick="toggleAuth('forgot')" class="text-xs text-gray-400 font-extrabold hover:underline">שכחתי מספר ספק</button>
+                    <button onclick="toggleAuth('reg')" class="text-xs text-blue-600 font-extrabold hover:underline">רישום חדש</button>
+                    <button onclick="toggleAuth('forgot')" class="text-xs text-gray-400 font-extrabold hover:underline">שחזור קוד למייל</button>
                 </div>
             </div>
 
             <div id="reg-form" class="hidden space-y-4">
                 <input type="email" id="regEmail" placeholder="אימייל עסקי" class="input-style text-center">
-                <button onclick="register()" class="btn-primary w-full py-5 text-lg bg-gray-900">יצירת חשבון ספק</button>
+                <button onclick="register()" class="btn-primary w-full py-5 text-lg bg-gray-900">יצירת חשבון ושליחת קוד</button>
                 <button onclick="toggleAuth('login')" class="text-xs text-gray-400 font-extrabold hover:underline">חזרה לכניסה</button>
             </div>
 
             <div id="forgot-form" class="hidden space-y-4">
-                <p class="text-xs text-gray-500 mb-2">הזינו מייל והקוד יישלח אליכם (בסימולציה)</p>
                 <input type="email" id="forgotEmail" placeholder="הזינו אימייל לשחזור" class="input-style text-center">
-                <button onclick="recover()" class="btn-primary w-full py-5 text-lg bg-amber-500">שלח לי את הקוד</button>
+                <button onclick="recover()" class="btn-primary w-full py-5 text-lg bg-amber-500">שלח לי את הקוד למייל</button>
                 <button onclick="toggleAuth('login')" class="text-xs text-gray-400 font-extrabold hover:underline">חזרה לכניסה</button>
             </div>
 
             <div id="id-display" class="hidden mt-6 p-6 bg-blue-50 border-2 border-dashed border-blue-200 rounded-3xl">
-                <p class="text-blue-600 font-black text-xs mb-2 uppercase">מספר הספק שלך נוצר!</p>
+                <p class="text-blue-600 font-black text-xs mb-2 uppercase">הקוד נשלח למייל שלך!</p>
                 <div id="new-id-val" class="text-3xl font-black text-gray-900 tracking-tighter mb-4"></div>
-                <button onclick="startApp()" class="text-xs bg-blue-600 text-white px-4 py-2 rounded-full font-bold">הבנתי, כנס למערכת</button>
+                <button onclick="startApp()" class="btn-primary px-6 py-2 text-sm">המשך ללוח הבקרה</button>
             </div>
         </div>
     </div>
@@ -88,9 +74,12 @@
     <div id="app" class="hidden min-h-screen">
         <header class="bg-white border-b border-gray-100 py-6 sticky top-0 z-50">
             <div class="max-w-5xl mx-auto px-6 flex justify-between items-center">
-                <div>
-                    <h2 class="text-xl font-black leading-none">לוח בקרה</h2>
-                    <p id="user-email-display" class="text-[11px] text-blue-600 font-bold mt-1 tracking-wide uppercase"></p>
+                <div class="flex items-center gap-4">
+                    <a href="index.html" class="bg-gray-100 p-3 rounded-xl hover:bg-gray-200 transition" title="חזרה לדף הראשי">🏠</a>
+                    <div>
+                        <h2 class="text-xl font-black leading-none">לוח בקרה</h2>
+                        <p id="user-email-display" class="text-[11px] text-blue-600 font-bold mt-1 tracking-wide uppercase"></p>
+                    </div>
                 </div>
                 <button onclick="logout()" class="text-gray-400 hover:text-red-500 transition font-bold text-xs">התנתקות ←</button>
             </div>
@@ -99,49 +88,28 @@
         <div class="max-w-5xl mx-auto p-6 pb-32">
             <main id="add" class="page active">
                 <div class="premium-card p-6 md:p-10">
-                    <h3 class="text-2xl font-black mb-6 text-gray-900">פרסום דיל חדש</h3>
+                    <h3 class="text-2xl font-black mb-6">פרסום דיל חדש</h3>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div class="space-y-4">
-                            <div>
-                                <label class="block text-xs font-black text-gray-400 mb-2 mr-1">כותרת הדיל</label>
-                                <input type="text" id="title" placeholder="לדוגמה: טיסה בכדור פורח" class="input-style">
-                            </div>
+                            <input type="text" id="title" placeholder="כותרת הדיל" class="input-style">
+                            <input type="text" id="city" placeholder="עיר" class="input-style">
                             <div class="grid grid-cols-2 gap-4">
-                                <div>
-                                    <label class="block text-xs font-black text-gray-400 mb-2 mr-1">עיר</label>
-                                    <input type="text" id="city" placeholder="מיקום" class="input-style">
-                                </div>
-                                <div>
-                                    <label class="block text-xs font-black text-gray-400 mb-2 mr-1">URL תמונה</label>
-                                    <input type="url" id="img" placeholder="https://..." class="input-style">
-                                </div>
-                            </div>
-                            <div class="grid grid-cols-2 gap-4">
-                                <div>
-                                    <label class="block text-xs font-black text-gray-400 mb-2 mr-1">מחיר רגיל</label>
-                                    <input type="number" id="orig" class="input-style">
-                                </div>
-                                <div>
-                                    <label class="block text-xs font-black text-gray-400 mb-2 mr-1 text-blue-600">מחיר דיל</label>
-                                    <input type="number" id="disc" class="input-style !border-blue-100 bg-blue-50/30">
-                                </div>
+                                <input type="number" id="orig" placeholder="מחיר רגיל" class="input-style">
+                                <input type="number" id="disc" placeholder="מחיר דיל" class="input-style !border-blue-100">
                             </div>
                         </div>
                         <div class="space-y-4">
                             <div class="grid grid-cols-2 gap-4">
-                                <div>
-                                    <label class="block text-xs font-black text-gray-400 mb-2 mr-1">תאריך סיום</label>
-                                    <input type="date" id="expiryDate" class="input-style text-sm">
-                                </div>
-                                <div>
-                                    <label class="block text-xs font-black text-gray-400 mb-2 mr-1">שעת סיום</label>
-                                    <input type="time" id="time" class="input-style">
-                                </div>
+                                <input type="date" id="expiryDate" class="input-style">
+                                <input type="time" id="time" class="input-style">
                             </div>
-                            <div>
-                                <label class="block text-xs font-black text-gray-400 mb-2 mr-1">תיאור קצר</label>
-                                <textarea id="desc" placeholder="מה המשתמש צריך לדעת?" class="input-style h-[124px] resize-none"></textarea>
+                            <div class="file-upload">
+                                <div id="upload-status" class="input-style text-center text-gray-400 border-dashed border-2 flex items-center justify-center gap-2">
+                                    <span>📸</span> <span id="file-label">לחץ להעלאת תמונה (עד 1MB)</span>
+                                </div>
+                                <input type="file" id="imgFile" accept="image/*">
                             </div>
+                            <textarea id="desc" placeholder="תיאור קצר..." class="input-style h-20 resize-none"></textarea>
                         </div>
                     </div>
                     <button onclick="publish()" id="pubBtn" class="btn-primary w-full py-5 mt-8 text-xl">פרסם דיל עכשיו 🚀</button>
@@ -149,20 +117,17 @@
             </main>
 
             <main id="list" class="page">
-                <div class="flex justify-between items-center mb-6">
-                    <h3 class="text-2xl font-black">הדילים שלי</h3>
-                    <span id="deal-count" class="bg-blue-100 text-blue-600 px-3 py-1 rounded-full text-xs font-black">0 דילים</span>
-                </div>
+                <h3 class="text-2xl font-black mb-6">הדילים שלי</h3>
                 <div id="my-list" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
             </main>
         </div>
 
-        <nav class="fixed bottom-6 left-1/2 -translate-x-1/2 nav-dock p-2 flex gap-2 shadow-2xl z-50">
-            <button onclick="switchTab('add')" id="tab-add" class="flex items-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-2xl font-bold transition-all">
-                <span>➕</span> <span class="hidden md:inline">הוספת דיל</span>
+        <nav class="fixed bottom-6 left-1/2 -translate-x-1/2 bg-white/80 backdrop-blur-xl border border-gray-100 p-2 rounded-3xl flex gap-2 shadow-2xl z-50">
+            <button onclick="switchTab('add')" id="tab-add" class="px-6 py-3 bg-blue-600 text-white rounded-2xl font-bold flex items-center gap-2 transition-all">
+                <span>➕</span> <span class="hidden md:inline">הוספה</span>
             </button>
-            <button onclick="switchTab('list')" id="tab-list" class="flex items-center gap-2 px-6 py-3 text-gray-400 hover:bg-gray-50 rounded-2xl font-bold transition-all">
-                <span>📋</span> <span class="hidden md:inline">ניהול דילים</span>
+            <button onclick="switchTab('list')" id="tab-list" class="px-6 py-3 text-gray-400 rounded-2xl font-bold flex items-center gap-2 transition-all">
+                <span>📋</span> <span class="hidden md:inline">ניהול</span>
             </button>
         </nav>
     </div>
@@ -170,15 +135,17 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc, serverTimestamp, query, where, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-storage.js";
 
-        const firebaseConfig = { apiKey: "AIzaSyCxMeoohFIuQcTJaAJ-Z4nd4Kmj79H1KYg", authDomain: "tafasti-20c41.firebaseapp.com", projectId: "tafasti-20c41", storageBucket: "tafasti-20c41.firebasestorage.app", messagingSenderId: "457032202921", appId: "1:457032202921:web:8f397ae80d9506a66d07b8" };
+        const firebaseConfig = { apiKey: "AIzaSyCxMeoohFIuQcTJaAJ-Z4nd4Kmj79H1KYg", authDomain: "tafasti-20c41.firebaseapp.com", projectId: "tafasti-20c41", storageBucket: "tafasti-20c41.appspot.com", messagingSenderId: "457032202921", appId: "1:457032202921:web:8f397ae80d9506a66d07b8" };
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
+        const storage = getStorage(app);
 
         let pid = localStorage.getItem('tafasti_pid');
         let userEmail = localStorage.getItem('tafasti_email');
+        let uploadedImgUrl = "";
 
-        // מערכת הודעות מותאמת
         function toast(msg, icon = '✨') {
             const t = document.getElementById('custom-toast');
             document.getElementById('toast-msg').innerText = msg;
@@ -187,36 +154,62 @@
             setTimeout(() => t.classList.remove('show'), 3000);
         }
 
-        window.toggleAuth = (mode) => {
-            document.getElementById('login-form').classList.add('hidden');
-            document.getElementById('reg-form').classList.add('hidden');
-            document.getElementById('forgot-form').classList.add('hidden');
-            document.getElementById('id-display').classList.add('hidden');
-            document.getElementById(`${mode}-form`).classList.remove('hidden');
-        };
+        // ניהול העלאת קובץ
+        document.getElementById('imgFile').addEventListener('change', async (e) => {
+            const file = e.target.files[0];
+            if(!file) return;
+
+            if(file.size > 1024 * 1024) {
+                toast('הקובץ גדול מדי! נא להעלות עד 1MB', '❌');
+                e.target.value = '';
+                return;
+            }
+
+            const label = document.getElementById('file-label');
+            label.innerText = "מעלה תמונה...";
+            
+            const storageRef = ref(storage, `offers/${Date.now()}_${file.name}`);
+            try {
+                const snapshot = await uploadBytes(storageRef, file);
+                uploadedImgUrl = await getDownloadURL(snapshot.ref);
+                label.innerText = "התמונה הועלתה בהצלחה ✅";
+                document.getElementById('upload-status').classList.replace('text-gray-400', 'text-green-600');
+            } catch (err) {
+                toast('שגיאה בהעלאת תמונה', '❌');
+                label.innerText = "לחץ להעלאת תמונה (עד 1MB)";
+            }
+        });
+
+        // פונקציית עזר לשליחת מייל דרך Firestore (דורש Trigger Email Extension)
+        async function sendMail(to, subject, body) {
+            await addDoc(collection(db, "mail"), {
+                to: to,
+                message: {
+                    subject: subject,
+                    text: body,
+                    html: `<b>${body}</b>`
+                }
+            });
+        }
 
         window.login = async () => {
             const input = document.getElementById('pidInput').value.toUpperCase().trim();
-            if(!input) return toast('נא להזין מספר ספק', '⚠️');
-            
             const snap = await getDoc(doc(db, "providers", input));
             if(snap.exists()) { 
-                pid = input; 
-                userEmail = snap.data().email;
-                startApp(); 
-            } else toast('מספר ספק לא נמצא', '❌');
+                pid = input; userEmail = snap.data().email; startApp(); 
+            } else toast('מספר ספק לא תקין', '❌');
         };
 
         window.register = async () => {
             const email = document.getElementById('regEmail').value.trim();
             if(!email.includes('@')) return toast('מייל לא תקין', '📧');
             
-            const newID = 'TAF-' + Math.floor(1000 + Math.random() * 9000); // מספר ספק נקי
+            const newID = 'TAF-' + Math.floor(1000 + Math.random() * 9000);
             await setDoc(doc(db, "providers", newID), { email: email, createdAt: serverTimestamp() });
             
-            userEmail = email;
-            pid = newID;
+            await sendMail(email, "קוד הספק שלך בתפסתי!", `שלום, קוד הספק שלך הוא: ${newID}`);
             
+            pid = newID; userEmail = email;
             document.getElementById('reg-form').classList.add('hidden');
             document.getElementById('id-display').classList.remove('hidden');
             document.getElementById('new-id-val').innerText = newID;
@@ -227,8 +220,36 @@
             const q = query(collection(db, "providers"), where("email", "==", email));
             const snap = await getDocs(q);
             if(!snap.empty) {
-                toast(`הקוד נשלח למייל: ${snap.docs[0].id}`, '📧');
-            } else toast('המייל לא קיים במערכת', '❌');
+                const code = snap.docs[0].id;
+                await sendMail(email, "שחזור קוד ספק - תפסתי", `שלום, ביקשת לשחזר את הקוד שלך. הקוד הוא: ${code}`);
+                toast('הקוד נשלח למייל שלך!', '📧');
+                toggleAuth('login');
+            } else toast('המייל לא נמצא במערכת', '❌');
+        };
+
+        window.publish = async () => {
+            if(!uploadedImgUrl) return toast('נא להעלות תמונה', '📸');
+            const b = document.getElementById('pubBtn');
+            b.innerText = 'מפרסם...'; b.disabled = true;
+            
+            try {
+                await addDoc(collection(db, "offers"), {
+                    title: document.getElementById('title').value,
+                    city: document.getElementById('city').value,
+                    time: document.getElementById('time').value,
+                    expiryDate: document.getElementById('expiryDate').value,
+                    originalPrice: Number(document.getElementById('orig').value),
+                    discountPrice: Number(document.getElementById('disc').value),
+                    imageUrl: uploadedImgUrl,
+                    description: document.getElementById('desc').value,
+                    providerID: pid,
+                    status: "active",
+                    createdAt: serverTimestamp()
+                });
+                toast('הדיל פורסם בהצלחה!', '🚀');
+                switchTab('list');
+            } catch (e) { toast('שגיאה בפרסום', '❌'); }
+            b.disabled = false; b.innerText = 'פרסם דיל עכשיו 🚀';
         };
 
         window.startApp = () => {
@@ -242,71 +263,38 @@
         }
 
         if(pid && userEmail) window.startApp();
-
-        window.logout = () => { 
-            localStorage.clear(); 
-            location.reload(); 
+        window.logout = () => { localStorage.clear(); location.reload(); };
+        window.toggleAuth = (m) => {
+            ['login','reg','forgot','id-display'].forEach(x => document.getElementById(x+'-form')?.classList.add('hidden'));
+            document.getElementById(m+'-form').classList.remove('hidden');
         };
 
         window.switchTab = (id) => {
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
             document.getElementById(id).classList.add('active');
-            
             const isAdd = id === 'add';
-            document.getElementById('tab-add').className = isAdd ? 'flex items-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-2xl font-bold transition-all' : 'flex items-center gap-2 px-6 py-3 text-gray-400 hover:bg-gray-50 rounded-2xl font-bold transition-all';
-            document.getElementById('tab-list').className = !isAdd ? 'flex items-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-2xl font-bold transition-all' : 'flex items-center gap-2 px-6 py-3 text-gray-400 hover:bg-gray-50 rounded-2xl font-bold transition-all';
-            
+            document.getElementById('tab-add').className = isAdd ? 'px-6 py-3 bg-blue-600 text-white rounded-2xl font-bold flex items-center gap-2 transition-all' : 'px-6 py-3 text-gray-400 rounded-2xl font-bold flex items-center gap-2 transition-all';
+            document.getElementById('tab-list').className = !isAdd ? 'px-6 py-3 bg-blue-600 text-white rounded-2xl font-bold flex items-center gap-2 transition-all' : 'px-6 py-3 text-gray-400 rounded-2xl font-bold flex items-center gap-2 transition-all';
             if(id === 'list') loadMyDeals();
-        };
-
-        window.publish = async () => {
-            const b = document.getElementById('pubBtn');
-            const title = document.getElementById('title').value;
-            if(!title) return toast('חסרה כותרת', '⚠️');
-
-            b.innerText = 'מפרסם...'; b.disabled = true;
-            
-            try {
-                await addDoc(collection(db, "offers"), {
-                    title: title, city: document.getElementById('city').value,
-                    time: document.getElementById('time').value, expiryDate: document.getElementById('expiryDate').value,
-                    originalPrice: Number(document.getElementById('orig').value),
-                    discountPrice: Number(document.getElementById('disc').value), imageUrl: document.getElementById('img').value,
-                    description: document.getElementById('desc').value, providerID: pid, status: "active", createdAt: serverTimestamp()
-                });
-                toast('הדיל באוויר!', '🚀');
-                b.innerText = 'פרסם דיל עכשיו 🚀'; b.disabled = false;
-                switchTab('list');
-            } catch (e) {
-                toast('שגיאה בפרסום', '❌');
-                b.disabled = false;
-            }
         };
 
         async function loadMyDeals() {
             const q = query(collection(db, "offers"), where("providerID", "==", pid));
             const snap = await getDocs(q);
             const list = document.getElementById('my-list');
-            document.getElementById('deal-count').innerText = `${snap.size} דילים`;
             list.innerHTML = '';
-            
             snap.forEach(d => {
                 const data = d.data();
-                list.innerHTML += `
-                <div class="premium-card p-4 flex justify-between items-center border-r-4 border-r-blue-500">
+                list.innerHTML += `<div class="premium-card p-4 flex justify-between items-center border-r-4 border-r-blue-500">
                     <div class="flex items-center gap-4">
                         <img src="${data.imageUrl}" class="w-16 h-16 rounded-xl object-cover">
-                        <div>
-                            <h4 class="font-bold text-gray-900 leading-none mb-1">${data.title}</h4>
-                            <p class="text-blue-600 font-black text-sm">₪${data.discountPrice}</p>
-                            <p class="text-[9px] text-gray-400 font-bold uppercase mt-1">עד: ${data.expiryDate}</p>
-                        </div>
+                        <div><h4 class="font-bold text-gray-900">${data.title}</h4><p class="text-blue-600 font-black">₪${data.discountPrice}</p></div>
                     </div>
-                    <button onclick="del('${d.id}')" class="p-3 hover:bg-red-50 text-red-400 rounded-xl transition-all">🗑️</button>
+                    <button onclick="del('${d.id}')" class="p-3 text-red-400">🗑️</button>
                 </div>`;
             });
         }
-        window.del = async (id) => { if(confirm('למחוק את הדיל?')) { await deleteDoc(doc(db, "offers", id)); loadMyDeals(); } };
+        window.del = async (id) => { if(confirm('למחוק?')) { await deleteDoc(doc(db, "offers", id)); loadMyDeals(); } };
     </script>
 </body>
 </html>
