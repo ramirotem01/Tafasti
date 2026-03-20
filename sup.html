@@ -2,298 +2,130 @@
 <html lang="he" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>מערכת ספקים | תפסתי!</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Assistant:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Assistant:wght@400;600;800&display=swap" rel="stylesheet">
     <style>
-        :root { --bg: #F9FAFB; --accent: #2563EB; --text-dark: #111827; }
-        body { font-family: 'Assistant', sans-serif; background-color: var(--bg); color: var(--text-dark); margin: 0; }
-        .premium-card { background: white; border-radius: 24px; border: 1px solid #F3F4F6; box-shadow: 0 10px 30px -5px rgba(0,0,0,0.04); }
-        .input-style { 
-            width: 100%; padding: 14px 18px; border-radius: 16px; border: 2px solid #F3F4F6; 
-            outline: none; transition: 0.3s; font-weight: 600; background: white; appearance: none;
-        }
-        .input-style:focus { border-color: var(--accent); box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.05); }
-        .btn-primary { background: var(--accent); color: white; border-radius: 16px; font-weight: 800; transition: 0.3s; cursor: pointer; border: none; }
-        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 10px 20px -5px rgba(37, 99, 235, 0.4); }
-        .page { display: none; }
-        .page.active { display: block; animation: fadeIn 0.4s ease; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; } }
-        #custom-toast { position: fixed; top: 20px; left: 50%; transform: translateX(-50%) translateY(-100px); transition: 0.5s ease; z-index: 1000; }
-        #custom-toast.show { transform: translateX(-50%) translateY(0); }
+        body { font-family: 'Assistant', sans-serif; background-color: #F9FAFB; }
+        .input-style { width: 100%; padding: 14px; border-radius: 16px; border: 2px solid #F3F4F6; outline: none; transition: 0.3s; }
+        .input-style:focus { border-color: #2563EB; }
+        .btn-primary { background: #2563EB; color: white; border-radius: 16px; font-weight: 800; cursor: pointer; border: none; transition: 0.3s; }
+        .btn-primary:hover { opacity: 0.9; transform: translateY(-1px); }
+        .hidden { display: none; }
     </style>
 </head>
 <body>
 
-    <div id="custom-toast" class="bg-gray-900 text-white px-8 py-4 rounded-2xl font-bold shadow-2xl flex items-center gap-3">
-        <span id="toast-icon">✨</span> <span id="toast-msg"></span>
-    </div>
-
     <div id="auth-screen" class="min-h-screen flex items-center justify-center p-6">
-        <div class="premium-card w-full max-w-md p-8 text-center">
-            <div class="flex justify-center mb-6">
-                <div class="bg-blue-600 text-white w-12 h-12 rounded-2xl flex items-center justify-center text-2xl font-black italic shadow-lg">ת</div>
-            </div>
-            
-            <h1 id="auth-title" class="text-3xl font-black mb-6">כניסת ספקים</h1>
+        <div class="bg-white w-full max-w-md p-8 rounded-[32px] shadow-xl text-center border border-gray-100">
+            <h1 id="auth-title" class="text-3xl font-black mb-6 text-gray-900">כניסת ספקים</h1>
 
             <div id="login-form" class="space-y-4">
-                <input type="text" id="pidInput" placeholder="מספר ספק (TAF-1234)" class="input-style text-center uppercase tracking-widest">
-                <button onclick="login()" class="btn-primary w-full py-5 text-lg">כניסה למערכת</button>
-                <div class="flex justify-between px-2 text-xs font-extrabold text-gray-400">
-                    <button onclick="toggleAuth('reg')" class="hover:text-blue-600 underline">רישום ספק חדש</button>
-                    <button onclick="toggleAuth('forgot')" class="hover:text-blue-600 underline">שחזור קוד ספק</button>
+                <input type="text" id="pidInput" placeholder="הזן קוד ספק (למשל: TAF-1234)" class="input-style text-center font-bold tracking-widest uppercase">
+                <button onclick="loginWithCode()" class="btn-primary w-full py-4">כניסה למערכת</button>
+                <div class="flex justify-between px-2 text-xs font-bold text-gray-400">
+                    <button onclick="showSection('reg')" class="hover:text-blue-600 underline">ספק חדש? הירשם</button>
+                    <button onclick="showSection('forgot')" class="hover:text-blue-600 underline text-red-400">שכחתי קוד</button>
                 </div>
             </div>
 
             <div id="reg-form" class="hidden space-y-4">
-                <p class="text-gray-500 text-sm mb-4">הזן אימייל וניצור לך מספר ספק באופן מיידי</p>
                 <input type="email" id="regEmail" placeholder="אימייל עסקי" class="input-style text-center">
-                <button onclick="register()" class="btn-primary w-full py-5 text-lg bg-gray-900">יצירת חשבון ספק</button>
-                <button onclick="toggleAuth('login')" class="text-xs text-gray-400 font-extrabold hover:underline block w-full">חזרה לכניסה</button>
+                <input type="password" id="regPass" placeholder="בחר סיסמה (הקוד שלך)" class="input-style text-center">
+                <button onclick="handleRegister()" class="btn-primary w-full py-4 bg-gray-900">צור חשבון וקבל קוד</button>
+                <button onclick="showSection('login')" class="text-xs text-gray-400 font-bold hover:underline">חזרה לכניסה</button>
             </div>
 
             <div id="forgot-form" class="hidden space-y-4">
-                <p class="text-gray-500 text-sm mb-4">הזן את המייל שאיתו נרשמת ונציג לך את הקוד</p>
+                <p class="text-gray-500 text-sm mb-4 font-semibold text-right">הזן את המייל שאיתו נרשמת. נשלח לך לינק לאיפוס הקוד בצורה מאובטחת.</p>
                 <input type="email" id="forgotEmail" placeholder="האימייל שלך" class="input-style text-center">
-                <button onclick="recoverCode()" class="btn-primary w-full py-5 text-lg bg-blue-500">שחזר קוד ספק</button>
-                <button onclick="toggleAuth('login')" class="text-xs text-gray-400 font-extrabold hover:underline block w-full">חזרה לכניסה</button>
+                <button onclick="sendRecoveryEmail()" class="btn-primary w-full py-4 bg-blue-500">שלח לינק לשחזור למייל</button>
+                <button onclick="showSection('login')" class="text-xs text-gray-400 font-bold hover:underline">חזרה לכניסה</button>
             </div>
-
-            <div id="id-display" class="hidden mt-6 p-6 bg-blue-50 border-2 border-dashed border-blue-200 rounded-3xl">
-                <p id="display-label" class="text-blue-600 font-black text-xs mb-2 uppercase">הקוד שלך מוכן!</p>
-                <div id="new-id-val" class="text-3xl font-black text-gray-900 tracking-tighter mb-4"></div>
-                <button onclick="startApp()" class="btn-primary w-full py-4 text-sm">המשך ללוח הבקרה</button>
+            
+            <div id="success-msg" class="hidden mt-4 p-4 bg-green-50 text-green-700 rounded-2xl text-sm font-bold">
+                הלינק נשלח! בדוק את תיבת המייל שלך (גם בספאם).
             </div>
         </div>
     </div>
 
-    <div id="app" class="hidden min-h-screen">
-        <header class="bg-white border-b border-gray-100 py-6 sticky top-0 z-50">
-            <div class="max-w-5xl mx-auto px-6 flex justify-between items-center">
-                <div class="flex items-center gap-4">
-                    <a href="index.html" class="bg-blue-50 p-3 rounded-xl hover:bg-blue-100 transition">🏠</a>
-                    <div>
-                        <h2 class="text-xl font-black leading-none uppercase">לוח בקרה</h2>
-                        <p id="user-email-display" class="text-[10px] text-blue-600 font-bold mt-1 tracking-wide uppercase"></p>
-                    </div>
-                </div>
-                <button onclick="logout()" class="text-gray-400 hover:text-red-500 transition font-bold text-xs">התנתקות ←</button>
-            </div>
-        </header>
-
-        <div class="max-w-5xl mx-auto p-6 pb-32">
-            <main id="add" class="page active">
-                <div class="premium-card p-6 md:p-10">
-                    <h3 class="text-2xl font-black mb-6">פרסום דיל חדש</h3>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div class="space-y-4">
-                            <input type="text" id="title" placeholder="כותרת הדיל" class="input-style">
-                            <select id="region" class="input-style">
-                                <option value="" disabled selected>בחר אזור בארץ</option>
-                                <option value="מרכז">מרכז</option>
-                                <option value="צפון">צפון</option>
-                                <option value="דרום">דרום</option>
-                                <option value="השרון">השרון</option>
-                                <option value="שפלה">שפלה</option>
-                                <option value="ירושלים">ירושלים</option>
-                            </select>
-                            <div class="grid grid-cols-2 gap-4">
-                                <input type="number" id="orig" placeholder="מחיר רגיל" class="input-style">
-                                <input type="number" id="disc" placeholder="מחיר דיל" class="input-style !border-blue-100">
-                            </div>
-                        </div>
-                        <div class="space-y-4">
-                            <div class="grid grid-cols-2 gap-4">
-                                <input type="date" id="expiryDate" class="input-style">
-                                <input type="time" id="time" class="input-style">
-                            </div>
-                            <input type="text" id="imgUrl" placeholder="קישור לתמונה (השאר ריק לברירת מחדל)" class="input-style">
-                            <input type="tel" id="phone" placeholder="טלפון לוואטסאפ (0501234567)" class="input-style">
-                            <textarea id="desc" placeholder="תיאור הדיל..." class="input-style h-20 resize-none"></textarea>
-                        </div>
-                    </div>
-                    <button onclick="publish()" id="pubBtn" class="btn-primary w-full py-5 mt-8 text-xl shadow-xl shadow-blue-100">פרסם דיל עכשיו 🚀</button>
-                </div>
-            </main>
-
-            <main id="list" class="page">
-                <h3 class="text-2xl font-black mb-6">הדילים שלי</h3>
-                <div id="my-list" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
-            </main>
+    <div id="app" class="hidden">
         </div>
-
-        <nav class="fixed bottom-6 left-1/2 -translate-x-1/2 bg-white/80 backdrop-blur-xl border border-gray-100 p-2 rounded-3xl flex gap-2 shadow-2xl z-50">
-            <button onclick="switchTab('add')" id="tab-add" class="px-8 py-4 bg-blue-600 text-white rounded-2xl font-bold flex items-center gap-2">
-                <span>➕</span> <span>הוספה</span>
-            </button>
-            <button onclick="switchTab('list')" id="tab-list" class="px-8 py-4 text-gray-400 rounded-2xl font-bold flex items-center gap-2">
-                <span>📋</span> <span>ניהול</span>
-            </button>
-        </nav>
-    </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc, serverTimestamp, query, where, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { 
+            getAuth, 
+            signInWithEmailAndPassword, 
+            createUserWithEmailAndPassword, 
+            sendPasswordResetEmail,
+            onAuthStateChanged 
+        } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-        const firebaseConfig = { apiKey: "AIzaSyCxMeoohFIuQcTJaAJ-Z4nd4Kmj79H1KYg", authDomain: "tafasti-20c41.firebaseapp.com", projectId: "tafasti-20c41", storageBucket: "tafasti-20c41.appspot.com", messagingSenderId: "457032202921", appId: "1:457032202921:web:8f397ae80d9506a66d07b8" };
+        const firebaseConfig = { 
+            apiKey: "AIzaSyCxMeoohFIuQcTJaAJ-Z4nd4Kmj79H1KYg", 
+            authDomain: "tafasti-20c41.firebaseapp.com", 
+            projectId: "tafasti-20c41", 
+            storageBucket: "tafasti-20c41.appspot.com", 
+            messagingSenderId: "457032202921", 
+            appId: "1:457032202921:web:8f397ae80d9506a66d07b8" 
+        };
+
         const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
         const db = getFirestore(app);
 
-        let pid = localStorage.getItem('tafasti_pid');
-        let userEmail = localStorage.getItem('tafasti_email');
-
-        const DEFAULT_IMG = "https://tinokotnet.files.wordpress.com/2016/03/girl-812482_640.jpg";
-
-        function toast(msg, icon = '✨') {
-            const t = document.getElementById('custom-toast');
-            document.getElementById('toast-msg').innerText = msg;
-            document.getElementById('toast-icon').innerText = icon;
-            t.classList.add('show');
-            setTimeout(() => t.classList.remove('show'), 3000);
-        }
-
-        window.toggleAuth = (m) => {
-            document.getElementById('login-form').classList.add('hidden');
-            document.getElementById('reg-form').classList.add('hidden');
-            document.getElementById('forgot-form').classList.add('hidden');
-            document.getElementById('id-display').classList.add('hidden');
-            
-            const titles = { 'login': 'כניסת ספקים', 'reg': 'רישום ספק חדש', 'forgot': 'שחזור קוד ספק' };
-            document.getElementById('auth-title').innerText = titles[m];
-            document.getElementById(m + '-form').classList.remove('hidden');
+        // פונקציית מעבר בין טפסים
+        window.showSection = (section) => {
+            const sections = ['login', 'reg', 'forgot'];
+            sections.forEach(s => document.getElementById(s + '-form').classList.add('hidden'));
+            document.getElementById(section + '-form').classList.remove('hidden');
+            document.getElementById('success-msg').classList.add('hidden');
         };
 
-        window.login = async () => {
-            const input = document.getElementById('pidInput').value.toUpperCase().trim();
-            if(!input) return toast('נא להזין קוד', '⚠️');
-            const snap = await getDoc(doc(db, "providers", input));
-            if(snap.exists()) { 
-                pid = input; 
-                userEmail = snap.data().email; 
-                startApp(); 
-            } else {
-                toast('מספר ספק לא תקין', '❌');
-            }
-        };
-
-        window.register = async () => {
-            const email = document.getElementById('regEmail').value.trim();
-            if(!email.includes('@')) return toast('מייל לא תקין', '📧');
-            
-            // בדיקה אם המייל כבר קיים
-            const q = query(collection(db, "providers"), where("email", "==", email));
-            const snap = await getDocs(q);
-            if(!snap.empty) return toast('המייל כבר רשום במערכת', '⚠️');
-
-            const newID = 'TAF-' + Math.floor(1000 + Math.random() * 9000);
-            await setDoc(doc(db, "providers", newID), { email: email, createdAt: serverTimestamp() });
-            
-            pid = newID; userEmail = email;
-            document.getElementById('reg-form').classList.add('hidden');
-            document.getElementById('display-label').innerText = "הקוד שלך מוכן! שמור אותו:";
-            document.getElementById('id-display').classList.remove('hidden');
-            document.getElementById('new-id-val').innerText = newID;
-        };
-
-        window.recoverCode = async () => {
+        // שחזור קוד מאובטח - שליחה למייל
+        window.sendRecoveryEmail = async () => {
             const email = document.getElementById('forgotEmail').value.trim();
-            if(!email) return toast('נא להזין מייל', '📧');
-            
-            const q = query(collection(db, "providers"), where("email", "==", email));
-            const snap = await getDocs(q);
-            
-            if(snap.empty) {
-                toast('לא נמצא ספק עם מייל זה', '❌');
-            } else {
-                const userData = snap.docs[0];
-                document.getElementById('forgot-form').classList.add('hidden');
-                document.getElementById('display-label').innerText = "הקוד שוחזר בהצלחה:";
-                document.getElementById('id-display').classList.remove('hidden');
-                document.getElementById('new-id-val').innerText = userData.id;
-                pid = userData.id;
-                userEmail = email;
-            }
-        };
-
-        window.startApp = () => {
-            localStorage.setItem('tafasti_pid', pid);
-            localStorage.setItem('tafasti_email', userEmail);
-            document.getElementById('auth-screen').classList.add('hidden');
-            document.getElementById('app').classList.remove('hidden');
-            document.getElementById('user-email-display').innerText = userEmail;
-            document.getElementById('expiryDate').valueAsDate = new Date();
-            loadMyDeals();
-        };
-
-        window.publish = async () => {
-            const title = document.getElementById('title').value;
-            const region = document.getElementById('region').value;
-            const phone = document.getElementById('phone').value;
-            const customImg = document.getElementById('imgUrl').value.trim();
-            
-            if(!title || !region || !phone) return toast('חובה למלא כותרת, אזור וטלפון', '⚠️');
-
-            const b = document.getElementById('pubBtn');
-            b.innerText = 'מפרסם...'; b.disabled = true;
+            if(!email) return alert('נא להזין אימייל');
             
             try {
-                await addDoc(collection(db, "offers"), {
-                    title, region, phone,
-                    time: document.getElementById('time').value,
-                    expiryDate: document.getElementById('expiryDate').value,
-                    originalPrice: Number(document.getElementById('orig').value),
-                    discountPrice: Number(document.getElementById('disc').value),
-                    imageUrl: customImg || DEFAULT_IMG,
-                    description: document.getElementById('desc').value,
-                    providerID: pid,
-                    createdAt: serverTimestamp()
+                await sendPasswordResetEmail(auth, email);
+                document.getElementById('success-msg').classList.remove('hidden');
+                document.getElementById('forgotEmail').value = '';
+            } catch (error) {
+                alert('שגיאה: וודא שהמייל תקין ורשום במערכת');
+            }
+        };
+
+        // רישום ספק חדש
+        window.handleRegister = async () => {
+            const email = document.getElementById('regEmail').value.trim();
+            const pass = document.getElementById('regPass').value;
+            if(!email || pass.length < 6) return alert('אימייל תקין וסיסמה של 6 תווים לפחות');
+
+            try {
+                const userCredential = await createUserWithEmailAndPassword(auth, email, pass);
+                const user = userCredential.user;
+                
+                // שמירת פרטי ספק ב-DB
+                await setDoc(doc(db, "providers", user.uid), {
+                    email: email,
+                    providerID: 'TAF-' + Math.floor(1000 + Math.random() * 9000)
                 });
-                toast('הדיל פורסם בהצלחה!', '🚀');
-                switchTab('list');
-                // איפוס
-                ['title','desc','orig','disc','imgUrl','phone','time'].forEach(id => document.getElementById(id).value = '');
-            } catch (e) { toast('שגיאה בפרסום', '❌'); }
-            b.disabled = false; b.innerText = 'פרסם דיל עכשיו 🚀';
+                
+                alert('נרשמת בהצלחה! השתמש במייל ובקוד שבחרת לכניסה הבאה.');
+            } catch (e) { alert('שגיאה ברישום: המשתמש כבר קיים'); }
         };
 
-        window.switchTab = (id) => {
-            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-            document.getElementById(id).classList.add('active');
-            if(id === 'list') loadMyDeals();
-            
-            document.getElementById('tab-add').className = id === 'add' ? 'px-8 py-4 bg-blue-600 text-white rounded-2xl font-bold flex items-center gap-2' : 'px-8 py-4 text-gray-400 rounded-2xl font-bold flex items-center gap-2';
-            document.getElementById('tab-list').className = id === 'list' ? 'px-8 py-4 bg-blue-600 text-white rounded-2xl font-bold flex items-center gap-2' : 'px-8 py-4 text-gray-400 rounded-2xl font-bold flex items-center gap-2';
+        // כניסה (כאן ה"קוד" הוא למעשה הסיסמה של Firebase Auth)
+        window.loginWithCode = async () => {
+            const pid = document.getElementById('pidInput').value.trim();
+            // כאן אפשר להוסיף לוגיקה שתומכת גם בכניסה עם אימייל וסיסמה
+            // או להשתמש בשיטה שבה ה-PID הוא מזהה הכניסה.
+            alert('כניסה מתבצעת...');
         };
-
-        async function loadMyDeals() {
-            const q = query(collection(db, "offers"), where("providerID", "==", pid));
-            const snap = await getDocs(q);
-            const list = document.getElementById('my-list');
-            list.innerHTML = '';
-            snap.forEach(d => {
-                const data = d.data();
-                list.innerHTML += `
-                <div class="premium-card p-4 flex justify-between items-center border-r-4 border-r-blue-500">
-                    <div class="flex items-center gap-4 text-right">
-                        <img src="${data.imageUrl}" class="w-16 h-16 rounded-xl object-cover bg-gray-100">
-                        <div>
-                            <h4 class="font-bold text-gray-900">${data.title}</h4>
-                            <p class="text-blue-600 font-black">₪${data.discountPrice}</p>
-                        </div>
-                    </div>
-                    <button onclick="del('${d.id}')" class="p-3 text-red-400 hover:bg-red-50 rounded-xl transition">🗑️</button>
-                </div>`;
-            });
-        }
-
-        window.del = async (id) => { if(confirm('למחוק את הדיל?')) { await deleteDoc(doc(db, "offers", id)); loadMyDeals(); } };
-        window.logout = () => { localStorage.clear(); location.reload(); };
-
-        // בדיקת התחברות קיימת
-        if(pid && userEmail) window.startApp();
     </script>
 </body>
 </html>
