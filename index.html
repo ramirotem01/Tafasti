@@ -81,6 +81,7 @@
                 <button onclick="filterBy('צפון')" class="city-tag px-8 py-4 rounded-2xl font-black bg-white text-gray-400 border border-gray-200 whitespace-nowrap text-sm shadow-sm transition-all">צפון</button>
                 <button onclick="filterBy('דרום')" class="city-tag px-8 py-4 rounded-2xl font-black bg-white text-gray-400 border border-gray-200 whitespace-nowrap text-sm shadow-sm transition-all">דרום</button>
                 <button onclick="filterBy('השרון')" class="city-tag px-8 py-4 rounded-2xl font-black bg-white text-gray-400 border border-gray-200 whitespace-nowrap text-sm shadow-sm transition-all">השרון</button>
+                <button onclick="filterBy('שפלה')" class="city-tag px-8 py-4 rounded-2xl font-black bg-white text-gray-400 border border-gray-200 whitespace-nowrap text-sm shadow-sm transition-all">שפלה</button>
                 <button onclick="filterBy('ירושלים')" class="city-tag px-8 py-4 rounded-2xl font-black bg-white text-gray-400 border border-gray-200 whitespace-nowrap text-sm shadow-sm transition-all">ירושלים</button>
             </div>
         </div>
@@ -126,7 +127,7 @@
             document.getElementById('modalDisc').innerText = '₪' + deal.discountPrice;
             document.getElementById('modalOrig').innerText = '₪' + deal.originalPrice;
             document.getElementById('modalTime').innerText = deal.time || "--:--";
-            document.getElementById('modalDate').innerText = "תוקף: " + deal.expiryDate;
+            document.getElementById('modalDate').innerText = "תאריך: " + deal.expiryDate;
             document.getElementById('modalDesc').innerText = deal.description || "";
             
             const phone = deal.phone || "";
@@ -160,7 +161,6 @@
                 const matchSearch = d.title.toLowerCase().includes(document.getElementById('searchInput').value.toLowerCase());
                 const matchRegion = currentFilter === 'הכל' || d.region === currentFilter;
                 
-                // לוגיקה משולבת תאריך + שעה
                 const isDealExpired = d.expiryDate < todayStr || (d.expiryDate === todayStr && d.time < currentTimeStr);
 
                 return showExpired ? (matchSearch && matchRegion && isDealExpired) : (matchSearch && matchRegion && !isDealExpired);
