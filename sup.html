@@ -35,9 +35,7 @@
             <div class="flex justify-center mb-6">
                 <div class="bg-blue-600 text-white w-12 h-12 rounded-2xl flex items-center justify-center text-2xl font-black italic shadow-lg">ת</div>
             </div>
-            
-            <h1 id="auth-title" class="text-3xl font-black mb-6">מערכת ספקים</h1>
-
+            <h1 class="text-3xl font-black mb-6">מערכת ספקים</h1>
             <div id="login-form" class="space-y-4">
                 <input type="text" id="pidInput" placeholder="הזן קוד ספק" class="input-style uppercase tracking-widest">
                 <button onclick="login()" class="btn-primary w-full py-5 text-lg">כניסה</button>
@@ -46,20 +44,11 @@
                     <button onclick="toggleAuth('forgot')" class="hover:text-blue-600 underline">שחזור קוד</button>
                 </div>
             </div>
-
             <div id="reg-form" class="hidden space-y-4">
                 <input type="email" id="regEmail" placeholder="אימייל עסקי" class="input-style">
                 <button onclick="register()" class="btn-primary w-full py-5 text-lg bg-gray-900">יצירת חשבון</button>
                 <button onclick="toggleAuth('login')" class="text-xs text-gray-400 font-extrabold hover:underline block w-full">חזרה</button>
             </div>
-
-            <div id="forgot-form" class="hidden space-y-4 text-right">
-                <p class="text-gray-500 text-sm mb-4">הזן אימייל ונשלח לך את הקוד שלך</p>
-                <input type="email" id="forgotEmail" placeholder="האימייל שלך" class="input-style">
-                <button onclick="recover()" class="btn-primary w-full py-5 text-lg bg-blue-500">שלח קוד למייל</button>
-                <button onclick="toggleAuth('login')" class="text-xs text-gray-400 font-extrabold hover:underline block w-full text-center">חזרה</button>
-            </div>
-
             <div id="id-display" class="hidden mt-6 p-6 bg-blue-50 border-2 border-dashed border-blue-200 rounded-3xl">
                 <p class="text-blue-600 font-black text-xs mb-2 uppercase italic">הקוד שלך הוגרל!</p>
                 <div id="new-id-val" class="text-4xl font-black text-gray-900 tracking-tighter mb-4"></div>
@@ -91,12 +80,9 @@
                             <input type="text" id="title" placeholder="כותרת הדיל" class="input-style text-right">
                             <select id="region" class="input-style text-right">
                                 <option value="" disabled selected>בחר אזור</option>
-                                <option value="מרכז">מרכז</option>
-                                <option value="צפון">צפון</option>
-                                <option value="דרום">דרום</option>
-                                <option value="השרון">השרון</option>
-                                <option value="שפלה">שפלה</option>
-                                <option value="ירושלים">ירושלים</option>
+                                <option value="מרכז">מרכז</option><option value="צפון">צפון</option>
+                                <option value="דרום">דרום</option><option value="השרון">השרון</option>
+                                <option value="שפלה">שפלה</option><option value="ירושלים">ירושלים</option>
                             </select>
                             <div class="grid grid-cols-2 gap-4">
                                 <input type="number" id="orig" placeholder="מחיר רגיל" class="input-style">
@@ -109,14 +95,11 @@
                                 <input type="time" id="time" class="input-style">
                             </div>
                             <input type="tel" id="phone" placeholder="טלפון לוואטסאפ" class="input-style">
-                            
                             <div class="relative">
                                 <input type="file" id="fileInput" accept="image/*" class="hidden" onchange="updateFileName(this)">
                                 <button onclick="document.getElementById('fileInput').click()" class="input-style bg-gray-50 border-dashed border-2 hover:bg-blue-50 text-blue-600 transition">📸 העלה תמונת דיל</button>
                                 <p id="fileNameDisplay" class="text-[10px] text-gray-400 mt-1 mr-2 font-bold"></p>
                             </div>
-
-                            <input type="text" id="imgUrl" placeholder="או הדבק קישור לתמונה" class="input-style">
                             <textarea id="desc" placeholder="תיאור קצר..." class="input-style h-20 resize-none text-right"></textarea>
                         </div>
                     </div>
@@ -144,12 +127,15 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        // --- Cloudinary Config ---
-        const CLOUDINARY_URL = "https://api.cloudinary.com/v1_1/dce5qps12/image/upload";
-        const CLOUDINARY_PRESET = "Tafasti";
-
         let pid = localStorage.getItem('tafasti_pid');
         let userEmail = localStorage.getItem('tafasti_email');
+        let cloudConfig = null;
+
+        // משיכת הגדרות מה-DB (אבטחה)
+        const fetchConfig = async () => {
+            const snap = await getDoc(doc(db, "settings", "cloudinary"));
+            if (snap.exists()) cloudConfig = snap.data();
+        };
 
         function toast(msg, icon = '✨') {
             const t = document.getElementById('custom-toast');
@@ -164,69 +150,36 @@
             document.getElementById('fileNameDisplay').innerText = fileName ? "קובץ נבחר: " + fileName : "";
         };
 
-        window.toggleAuth = (m) => {
-            ['login','reg','forgot','id-display'].forEach(x => {
-                const el = document.getElementById(x+'-form') || document.getElementById(x);
-                if(el) el.classList.add('hidden');
-            });
-            const target = document.getElementById(m + (m === 'id-display' ? '' : '-form'));
-            if(target) target.classList.remove('hidden');
-        };
-
         window.login = async () => {
             const input = document.getElementById('pidInput').value.toUpperCase().trim();
             if(!input) return toast('הזן קוד', '⚠️');
             const snap = await getDoc(doc(db, "providers", input));
-            if(snap.exists()) { 
-                pid = input; 
-                userEmail = snap.data().email; 
-                startApp(); 
-            } else toast('קוד לא תקין', '❌');
+            if(snap.exists()) { pid = input; userEmail = snap.data().email; startApp(); } else toast('קוד לא תקין', '❌');
         };
 
-        window.register = async () => {
-            const email = document.getElementById('regEmail').value.trim();
-            if(!email.includes('@')) return toast('מייל לא תקין', '📧');
-            const q = query(collection(db, "providers"), where("email", "==", email));
-            const snap = await getDocs(q);
-            if(!snap.empty) return toast('המייל כבר רשום', '⚠️');
-
-            const newID = 'TAF-' + Math.floor(1000 + Math.random() * 9000);
-            await setDoc(doc(db, "providers", newID), { email, createdAt: serverTimestamp() });
-            
-            pid = newID; userEmail = email; 
-            document.getElementById('reg-form').classList.add('hidden');
-            document.getElementById('id-display').classList.remove('hidden');
-            document.getElementById('new-id-val').innerText = newID;
-        };
-
-        window.recover = async () => {
-            const email = document.getElementById('forgotEmail').value.trim();
-            if(!email) return toast('הזן מייל', '📧');
-            const q = query(collection(db, "providers"), where("email", "==", email));
-            const snap = await getDocs(q);
-            if(snap.empty) return toast('המייל לא נמצא', '❌');
-            toast('הקוד נשלח למייל שלך!', '📩');
-            setTimeout(() => toggleAuth('login'), 2000);
-        };
-
-        window.startApp = () => {
+        window.startApp = async () => {
             localStorage.setItem('tafasti_pid', pid);
             localStorage.setItem('tafasti_email', userEmail);
             document.getElementById('auth-screen').classList.add('hidden');
             document.getElementById('app').classList.remove('hidden');
             document.getElementById('user-email-display').innerText = userEmail;
-            document.getElementById('expiryDate').valueAsDate = new Date();
+            
+            // הגדרת זמן: תאריך היום ושעה אחת קדימה
+            const now = new Date();
+            document.getElementById('expiryDate').valueAsDate = now;
+            now.setHours(now.getHours() + 1);
+            document.getElementById('time').value = now.toTimeString().slice(0,5);
+            
+            await fetchConfig();
             loadMyDeals();
         };
 
-        // פונקציית העלאת תמונה
         async function uploadToCloudinary(file) {
+            if(!cloudConfig) await fetchConfig();
             const formData = new FormData();
             formData.append('file', file);
-            formData.append('upload_preset', CLOUDINARY_PRESET);
-            const response = await fetch(CLOUDINARY_URL, { method: 'POST', body: formData });
-            if (!response.ok) throw new Error('Upload failed');
+            formData.append('upload_preset', cloudConfig.preset);
+            const response = await fetch(cloudConfig.url, { method: 'POST', body: formData });
             const data = await response.json();
             return data.secure_url;
         }
@@ -236,15 +189,12 @@
             const title = document.getElementById('title').value;
             const region = document.getElementById('region').value;
             const fileInput = document.getElementById('fileInput');
-            const manualUrl = document.getElementById('imgUrl').value;
 
             if(!title || !region) return toast('מלא כותרת ואזור', '⚠️');
-
             b.innerText = 'מפרסם...'; b.disabled = true;
 
             try {
-                let finalUrl = manualUrl || "https://tinokotnet.files.wordpress.com/2016/03/girl-812482_640.jpg";
-
+                let finalUrl = "https://tinokotnet.files.wordpress.com/2016/03/girl-812482_640.jpg";
                 if (fileInput.files.length > 0) {
                     b.innerText = 'מעלה תמונה...';
                     finalUrl = await uploadToCloudinary(fileInput.files[0]);
@@ -262,16 +212,10 @@
                     providerID: pid,
                     createdAt: serverTimestamp()
                 });
-                
                 toast('פורסם בהצלחה!', '🚀');
-                // איפוס שדות העלאה
-                fileInput.value = "";
-                document.getElementById('fileNameDisplay').innerText = "";
+                fileInput.value = ""; document.getElementById('fileNameDisplay').innerText = "";
                 switchTab('list');
-            } catch (e) { 
-                console.error(e);
-                toast('שגיאה בתהליך', '❌'); 
-            }
+            } catch (e) { toast('שגיאה בתהליך', '❌'); }
             b.innerText = 'פרסם דיל עכשיו 🚀'; b.disabled = false;
         };
 
@@ -293,7 +237,6 @@
         };
 
         window.del = async (id) => { if(confirm('למחוק?')) { await deleteDoc(doc(db, "offers", id)); loadMyDeals(); } };
-        
         window.switchTab = (id) => {
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
             document.getElementById(id).classList.add('active');
@@ -301,8 +244,11 @@
             document.getElementById('tab-add').className = id === 'add' ? 'px-8 py-4 bg-blue-600 text-white rounded-2xl font-bold' : 'px-8 py-4 text-gray-400 rounded-2xl font-bold';
             document.getElementById('tab-list').className = id === 'list' ? 'px-8 py-4 bg-blue-600 text-white rounded-2xl font-bold' : 'px-8 py-4 text-gray-400 rounded-2xl font-bold';
         };
-
         window.logout = () => { localStorage.clear(); location.reload(); };
+        window.toggleAuth = (m) => {
+            ['login','reg','forgot','id-display'].forEach(x => document.getElementById(x+'-form')?.classList.add('hidden') || document.getElementById(x)?.classList.add('hidden'));
+            document.getElementById(m + (m === 'id-display' ? '' : '-form'))?.classList.remove('hidden');
+        };
 
         if(pid && userEmail) startApp();
     </script>
