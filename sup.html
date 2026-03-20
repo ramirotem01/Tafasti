@@ -36,30 +36,21 @@
                 <div class="bg-blue-600 text-white w-12 h-12 rounded-2xl flex items-center justify-center text-2xl font-black italic shadow-lg">ת</div>
             </div>
             <h1 class="text-3xl font-black mb-2">כניסת ספקים</h1>
-            
             <div id="login-form" class="space-y-4">
-                <input type="text" id="pidInput" placeholder="מספר ספק (לדוגמה: TAF-1234)" class="input-style text-center uppercase tracking-widest">
+                <input type="text" id="pidInput" placeholder="מספר ספק (TAF-1234)" class="input-style text-center uppercase tracking-widest">
                 <button onclick="login()" class="btn-primary w-full py-5 text-lg">כניסה למערכת</button>
-                <div class="flex justify-between px-2 text-xs font-extrabold">
-                    <button onclick="toggleAuth('reg')" class="text-blue-600 hover:underline">רישום חדש</button>
-                    <button onclick="toggleAuth('forgot')" class="text-gray-400 hover:underline">שחזור קוד למייל</button>
+                <div class="flex justify-between px-2 text-xs font-extrabold text-gray-400">
+                    <button onclick="toggleAuth('reg')" class="hover:text-blue-600 underline">רישום חדש</button>
+                    <button onclick="toggleAuth('forgot')" class="hover:text-blue-600 underline">שחזור קוד</button>
                 </div>
             </div>
-
             <div id="reg-form" class="hidden space-y-4">
                 <input type="email" id="regEmail" placeholder="אימייל עסקי" class="input-style text-center">
-                <button onclick="register()" class="btn-primary w-full py-5 text-lg bg-gray-900">יצירת חשבון ושליחת קוד</button>
+                <button onclick="register()" class="btn-primary w-full py-5 text-lg bg-gray-900">יצירת חשבון</button>
                 <button onclick="toggleAuth('login')" class="text-xs text-gray-400 font-extrabold hover:underline">חזרה לכניסה</button>
             </div>
-
-            <div id="forgot-form" class="hidden space-y-4">
-                <input type="email" id="forgotEmail" placeholder="הזינו אימייל לשחזור" class="input-style text-center">
-                <button onclick="recover()" class="btn-primary w-full py-5 text-lg bg-amber-500">שלח לי את הקוד למייל</button>
-                <button onclick="toggleAuth('login')" class="text-xs text-gray-400 font-extrabold hover:underline">חזרה לכניסה</button>
-            </div>
-
             <div id="id-display" class="hidden mt-6 p-6 bg-blue-50 border-2 border-dashed border-blue-200 rounded-3xl">
-                <p class="text-blue-600 font-black text-xs mb-2 uppercase">הקוד נשלח למייל שלך!</p>
+                <p class="text-blue-600 font-black text-xs mb-2 uppercase">הקוד שלך מוכן!</p>
                 <div id="new-id-val" class="text-3xl font-black text-gray-900 tracking-tighter mb-4"></div>
                 <button onclick="startApp()" class="btn-primary px-6 py-2 text-sm">המשך ללוח הבקרה</button>
             </div>
@@ -70,13 +61,10 @@
         <header class="bg-white border-b border-gray-100 py-6 sticky top-0 z-50">
             <div class="max-w-5xl mx-auto px-6 flex justify-between items-center">
                 <div class="flex items-center gap-4">
-                    <a href="index.html" class="bg-blue-50 p-3 rounded-xl hover:bg-blue-100 transition flex items-center gap-2">
-                        <span>🏠</span>
-                        <span class="text-blue-600 font-bold text-xs hidden sm:inline">חזרה לדילים</span>
-                    </a>
+                    <a href="index.html" class="bg-blue-50 p-3 rounded-xl hover:bg-blue-100 transition">🏠</a>
                     <div>
-                        <h2 class="text-xl font-black leading-none">לוח בקרה</h2>
-                        <p id="user-email-display" class="text-[11px] text-blue-600 font-bold mt-1 tracking-wide uppercase"></p>
+                        <h2 class="text-xl font-black leading-none uppercase">לוח בקרה</h2>
+                        <p id="user-email-display" class="text-[10px] text-blue-600 font-bold mt-1 tracking-wide uppercase"></p>
                     </div>
                 </div>
                 <button onclick="logout()" class="text-gray-400 hover:text-red-500 transition font-bold text-xs">התנתקות ←</button>
@@ -89,7 +77,7 @@
                     <h3 class="text-2xl font-black mb-6">פרסום דיל חדש</h3>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div class="space-y-4">
-                            <input type="text" id="title" placeholder="כותרת הדיל (לדוגמה: לילה במלון דרומא)" class="input-style">
+                            <input type="text" id="title" placeholder="כותרת הדיל" class="input-style">
                             <select id="region" class="input-style">
                                 <option value="" disabled selected>בחר אזור בארץ</option>
                                 <option value="מרכז">מרכז</option>
@@ -107,14 +95,14 @@
                         <div class="space-y-4">
                             <div class="grid grid-cols-2 gap-4">
                                 <input type="date" id="expiryDate" class="input-style">
-                                <input type="time" id="time" class="input-style" placeholder="שעה">
+                                <input type="time" id="time" class="input-style">
                             </div>
-                            <input type="text" id="imgUrl" placeholder="קישור לתמונה (URL)" class="input-style">
-                            <input type="tel" id="phone" placeholder="טלפון לוואטספ (לדוגמה: 0501234567)" class="input-style">
-                            <textarea id="desc" placeholder="תיאור קצר של הדיל..." class="input-style h-20 resize-none"></textarea>
+                            <input type="text" id="imgUrl" placeholder="קישור לתמונה (השאר ריק לברירת מחדל)" class="input-style">
+                            <input type="tel" id="phone" placeholder="טלפון לוואטסאפ (לדוגמה: 0501234567)" class="input-style">
+                            <textarea id="desc" placeholder="תיאור הדיל..." class="input-style h-20 resize-none"></textarea>
                         </div>
                     </div>
-                    <button onclick="publish()" id="pubBtn" class="btn-primary w-full py-5 mt-8 text-xl">פרסם דיל עכשיו 🚀</button>
+                    <button onclick="publish()" id="pubBtn" class="btn-primary w-full py-5 mt-8 text-xl shadow-xl shadow-blue-100">פרסם דיל עכשיו 🚀</button>
                 </div>
             </main>
 
@@ -125,11 +113,11 @@
         </div>
 
         <nav class="fixed bottom-6 left-1/2 -translate-x-1/2 bg-white/80 backdrop-blur-xl border border-gray-100 p-2 rounded-3xl flex gap-2 shadow-2xl z-50">
-            <button onclick="switchTab('add')" id="tab-add" class="px-6 py-3 bg-blue-600 text-white rounded-2xl font-bold flex items-center gap-2 transition-all">
-                <span>➕</span> <span class="hidden md:inline">הוספה</span>
+            <button onclick="switchTab('add')" id="tab-add" class="px-8 py-4 bg-blue-600 text-white rounded-2xl font-bold flex items-center gap-2">
+                <span>➕</span> <span>הוספה</span>
             </button>
-            <button onclick="switchTab('list')" id="tab-list" class="px-6 py-3 text-gray-400 rounded-2xl font-bold flex items-center gap-2 transition-all">
-                <span>📋</span> <span class="hidden md:inline">ניהול</span>
+            <button onclick="switchTab('list')" id="tab-list" class="px-8 py-4 text-gray-400 rounded-2xl font-bold flex items-center gap-2">
+                <span>📋</span> <span>ניהול</span>
             </button>
         </nav>
     </div>
@@ -144,6 +132,8 @@
 
         let pid = localStorage.getItem('tafasti_pid');
         let userEmail = localStorage.getItem('tafasti_email');
+
+        const DEFAULT_IMG = "https://tinokotnet.files.wordpress.com/2016/03/girl-812482_640.jpg";
 
         function toast(msg, icon = '✨') {
             const t = document.getElementById('custom-toast');
@@ -176,6 +166,8 @@
             const title = document.getElementById('title').value;
             const region = document.getElementById('region').value;
             const phone = document.getElementById('phone').value;
+            const customImg = document.getElementById('imgUrl').value.trim();
+            
             if(!title || !region || !phone) return toast('חובה למלא כותרת, אזור וטלפון', '⚠️');
 
             const b = document.getElementById('pubBtn');
@@ -188,13 +180,16 @@
                     expiryDate: document.getElementById('expiryDate').value,
                     originalPrice: Number(document.getElementById('orig').value),
                     discountPrice: Number(document.getElementById('disc').value),
-                    imageUrl: document.getElementById('imgUrl').value,
+                    imageUrl: customImg || DEFAULT_IMG, // שימוש בתמונת ברירת המחדל אם ריק
                     description: document.getElementById('desc').value,
                     providerID: pid,
                     createdAt: serverTimestamp()
                 });
                 toast('הדיל פורסם בהצלחה!', '🚀');
                 switchTab('list');
+                // איפוס שדות
+                document.getElementById('title').value = '';
+                document.getElementById('desc').value = '';
             } catch (e) { toast('שגיאה בפרסום', '❌'); }
             b.disabled = false; b.innerText = 'פרסם דיל עכשיו 🚀';
         };
@@ -219,6 +214,9 @@
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
             document.getElementById(id).classList.add('active');
             if(id === 'list') loadMyDeals();
+            // עדכון עיצוב כפתורי הניווט
+            document.getElementById('tab-add').className = id === 'add' ? 'px-8 py-4 bg-blue-600 text-white rounded-2xl font-bold flex items-center gap-2' : 'px-8 py-4 text-gray-400 rounded-2xl font-bold flex items-center gap-2';
+            document.getElementById('tab-list').className = id === 'list' ? 'px-8 py-4 bg-blue-600 text-white rounded-2xl font-bold flex items-center gap-2' : 'px-8 py-4 text-gray-400 rounded-2xl font-bold flex items-center gap-2';
         };
 
         async function loadMyDeals() {
@@ -230,14 +228,14 @@
                 const data = d.data();
                 list.innerHTML += `<div class="premium-card p-4 flex justify-between items-center border-r-4 border-r-blue-500">
                     <div class="flex items-center gap-4">
-                        <img src="${data.imageUrl}" class="w-16 h-16 rounded-xl object-cover bg-gray-100" onerror="this.src='https://placehold.co/100x100?text=No+Img'">
+                        <img src="${data.imageUrl}" class="w-16 h-16 rounded-xl object-cover bg-gray-100">
                         <div><h4 class="font-bold text-gray-900">${data.title}</h4><p class="text-blue-600 font-black">₪${data.discountPrice}</p></div>
                     </div>
-                    <button onclick="del('${d.id}')" class="p-3 text-red-400">🗑️</button>
+                    <button onclick="del('${d.id}')" class="p-3 text-red-400 hover:bg-red-50 rounded-xl transition">🗑️</button>
                 </div>`;
             });
         }
-        window.del = async (id) => { if(confirm('למחוק?')) { await deleteDoc(doc(db, "offers", id)); loadMyDeals(); } };
+        window.del = async (id) => { if(confirm('למחוק את הדיל?')) { await deleteDoc(doc(db, "offers", id)); loadMyDeals(); } };
     </script>
 </body>
 </html>
