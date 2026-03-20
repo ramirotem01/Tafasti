@@ -3,116 +3,167 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>פורטל ספקים | תפסתי!</title>
+    <title>מערכת ספקים | תפסתי!</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Assistant:wght@400;700;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Assistant:wght@300;400;600;800&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Assistant', sans-serif; background: #000; color: #fff; padding-bottom: 90px; }
-        .glass-card { background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 28px; padding: 24px; }
-        .input-10gaz { background: #111; border: 1px solid #222; border-radius: 16px; padding: 18px; width: 100%; color: #fff; font-weight: 700; outline: none; transition: 0.3s; font-size: 16px; }
-        .input-10gaz:focus { border-color: #3b82f6; box-shadow: 0 0 20px rgba(59,130,246,0.1); background: #151515; }
-        label { display: block; font-size: 11px; font-weight: 900; color: #444; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 6px; margin-right: 8px; }
-        .page { display: none; }
-        .page.active { display: block; animation: zoomIn 0.3s ease; }
-        @keyframes zoomIn { from { opacity: 0; transform: scale(0.98); } to { opacity: 1; transform: scale(1); } }
+        :root { --bg: #F9FAFB; --accent: #2563EB; --text-dark: #111827; }
+        body { font-family: 'Assistant', sans-serif; background-color: var(--bg); color: var(--text-dark); margin: 0; }
         
-        /* עיצוב מיוחד לשדות תאריך ושעה בדפדפנים */
-        input[type="date"]::-webkit-calendar-picker-indicator,
-        input[type="time"]::-webkit-calendar-picker-indicator { filter: invert(1); opacity: 0.5; }
+        /* כרטיסיות ועיצוב כללי */
+        .premium-card { background: white; border-radius: 24px; border: 1px solid #F3F4F6; box-shadow: 0 10px 30px -5px rgba(0,0,0,0.04); }
+        .input-style { 
+            width: 100%; padding: 14px 18px; border-radius: 16px; border: 2px solid #F3F4F6; 
+            outline: none; transition: all 0.3s; font-weight: 600; background: white;
+        }
+        .input-style:focus { border-color: var(--accent); box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.05); }
+        
+        /* ביטול חצים במספרי מחיר */
+        input::-webkit-outer-spin-button, input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+        input[type=number] { -moz-appearance: textfield; }
+
+        .btn-primary { 
+            background: var(--accent); color: white; border-radius: 16px; font-weight: 800; 
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 10px 20px -5px rgba(37, 99, 235, 0.4); opacity: 0.95; }
+
+        /* ניווט */
+        .nav-dock { background: rgba(255,255,255,0.8); backdrop-filter: blur(15px); border-radius: 24px; border: 1px solid rgba(0,0,0,0.05); }
+
+        .page { display: none; }
+        .page.active { display: block; animation: fadeIn 0.4s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* תיבת הודעה מעוצבת (במקום Alert) */
+        #custom-toast { 
+            position: fixed; top: 20px; left: 50%; transform: translateX(-50%) translateY(-100px);
+            transition: 0.5s ease; z-index: 1000;
+        }
+        #custom-toast.show { transform: translateX(-50%) translateY(0); }
     </style>
 </head>
 <body>
 
-    <div id="auth-screen" class="fixed inset-0 bg-black z-[200] flex items-center justify-center p-8">
-        <div class="glass-card w-full max-w-sm text-center">
-            <h1 class="text-3xl font-black italic mb-2 tracking-tighter">SUP<span class="text-blue-500">PORTAL</span></h1>
-            <p class="text-slate-500 text-xs font-bold uppercase tracking-[0.3em] mb-10">Verification System</p>
+    <div id="custom-toast" class="bg-gray-900 text-white px-8 py-4 rounded-2xl font-bold shadow-2xl flex items-center gap-3">
+        <span id="toast-icon">✨</span> <span id="toast-msg"></span>
+    </div>
+
+    <div id="auth-screen" class="min-h-screen flex items-center justify-center p-6">
+        <div class="premium-card w-full max-w-md p-8 text-center">
+            <div class="bg-blue-600 text-white w-12 h-12 rounded-2xl flex items-center justify-center text-2xl font-black italic mx-auto mb-4 shadow-lg shadow-blue-200">ת</div>
+            <h1 class="text-3xl font-black mb-2">כניסת ספקים</h1>
+            <p class="text-gray-400 font-bold text-sm mb-8">נהלו את הדילים שלכם בקלות</p>
             
-            <div id="login-form">
-                <input type="text" id="pidInput" placeholder="ENTER PROVIDER ID" class="input-10gaz text-center mb-4 font-mono tracking-widest uppercase">
-                <button onclick="login()" class="w-full bg-blue-600 text-white py-5 rounded-2xl font-black text-lg shadow-xl hover:bg-blue-500 transition">ACCESS ACCOUNT</button>
-                <button onclick="toggleAuth('reg')" class="mt-6 text-xs text-slate-500 font-bold hover:text-white transition uppercase tracking-widest">Register New Account</button>
+            <div id="login-form" class="space-y-4">
+                <input type="text" id="pidInput" placeholder="הזינו מספר ספק" class="input-style text-center uppercase tracking-widest">
+                <button onclick="login()" class="btn-primary w-full py-5 text-lg">כניסה למערכת</button>
+                <div class="flex justify-between px-2">
+                    <button onclick="toggleAuth('reg')" class="text-xs text-blue-600 font-extrabold hover:underline">רישום ספק חדש</button>
+                    <button onclick="toggleAuth('forgot')" class="text-xs text-gray-400 font-extrabold hover:underline">שכחתי מספר ספק</button>
+                </div>
             </div>
 
-            <div id="reg-form" class="hidden">
-                <input type="email" id="regEmail" placeholder="ENTER YOUR EMAIL" class="input-10gaz text-center mb-4">
-                <button onclick="register()" class="w-full bg-white text-black py-5 rounded-2xl font-black text-lg hover:bg-gray-200 transition">GENERATE ID</button>
-                <button onclick="toggleAuth('login')" class="mt-6 text-xs text-slate-500 font-bold hover:text-white transition uppercase tracking-widest">Back to login</button>
+            <div id="reg-form" class="hidden space-y-4">
+                <input type="email" id="regEmail" placeholder="אימייל עסקי" class="input-style text-center">
+                <button onclick="register()" class="btn-primary w-full py-5 text-lg bg-gray-900">יצירת חשבון ספק</button>
+                <button onclick="toggleAuth('login')" class="text-xs text-gray-400 font-extrabold hover:underline">חזרה לכניסה</button>
+            </div>
+
+            <div id="forgot-form" class="hidden space-y-4">
+                <p class="text-xs text-gray-500 mb-2">הזינו מייל והקוד יישלח אליכם (בסימולציה)</p>
+                <input type="email" id="forgotEmail" placeholder="הזינו אימייל לשחזור" class="input-style text-center">
+                <button onclick="recover()" class="btn-primary w-full py-5 text-lg bg-amber-500">שלח לי את הקוד</button>
+                <button onclick="toggleAuth('login')" class="text-xs text-gray-400 font-extrabold hover:underline">חזרה לכניסה</button>
+            </div>
+
+            <div id="id-display" class="hidden mt-6 p-6 bg-blue-50 border-2 border-dashed border-blue-200 rounded-3xl">
+                <p class="text-blue-600 font-black text-xs mb-2 uppercase">מספר הספק שלך נוצר!</p>
+                <div id="new-id-val" class="text-3xl font-black text-gray-900 tracking-tighter mb-4"></div>
+                <button onclick="startApp()" class="text-xs bg-blue-600 text-white px-4 py-2 rounded-full font-bold">הבנתי, כנס למערכת</button>
             </div>
         </div>
     </div>
 
-    <div id="app" class="hidden max-w-lg mx-auto p-6">
-        <header class="flex justify-between items-center mb-10">
-            <div>
-                <h2 class="text-2xl font-black italic leading-none">CONTROL PANEL</h2>
-                <p class="text-[10px] text-slate-500 font-bold uppercase tracking-wider mt-1">Provider Interface</p>
+    <div id="app" class="hidden min-h-screen">
+        <header class="bg-white border-b border-gray-100 py-6 sticky top-0 z-50">
+            <div class="max-w-5xl mx-auto px-6 flex justify-between items-center">
+                <div>
+                    <h2 class="text-xl font-black leading-none">לוח בקרה</h2>
+                    <p id="user-email-display" class="text-[11px] text-blue-600 font-bold mt-1 tracking-wide uppercase"></p>
+                </div>
+                <button onclick="logout()" class="text-gray-400 hover:text-red-500 transition font-bold text-xs">התנתקות ←</button>
             </div>
-            <div id="id-badge" class="px-3 py-1 bg-blue-500/10 text-blue-500 rounded-lg font-mono text-[10px] border border-blue-500/20 tracking-tighter"></div>
         </header>
 
-        <main id="add" class="page active">
-            <div class="glass-card space-y-5">
-                <div>
-                    <label>כותרת הדיל</label>
-                    <input type="text" id="title" placeholder="לדוגמה: שיט בסירה מהירה" class="input-10gaz">
+        <div class="max-w-5xl mx-auto p-6 pb-32">
+            <main id="add" class="page active">
+                <div class="premium-card p-6 md:p-10">
+                    <h3 class="text-2xl font-black mb-6 text-gray-900">פרסום דיל חדש</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="space-y-4">
+                            <div>
+                                <label class="block text-xs font-black text-gray-400 mb-2 mr-1">כותרת הדיל</label>
+                                <input type="text" id="title" placeholder="לדוגמה: טיסה בכדור פורח" class="input-style">
+                            </div>
+                            <div class="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-xs font-black text-gray-400 mb-2 mr-1">עיר</label>
+                                    <input type="text" id="city" placeholder="מיקום" class="input-style">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-black text-gray-400 mb-2 mr-1">URL תמונה</label>
+                                    <input type="url" id="img" placeholder="https://..." class="input-style">
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-xs font-black text-gray-400 mb-2 mr-1">מחיר רגיל</label>
+                                    <input type="number" id="orig" class="input-style">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-black text-gray-400 mb-2 mr-1 text-blue-600">מחיר דיל</label>
+                                    <input type="number" id="disc" class="input-style !border-blue-100 bg-blue-50/30">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="space-y-4">
+                            <div class="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-xs font-black text-gray-400 mb-2 mr-1">תאריך סיום</label>
+                                    <input type="date" id="expiryDate" class="input-style text-sm">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-black text-gray-400 mb-2 mr-1">שעת סיום</label>
+                                    <input type="time" id="time" class="input-style">
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-black text-gray-400 mb-2 mr-1">תיאור קצר</label>
+                                <textarea id="desc" placeholder="מה המשתמש צריך לדעת?" class="input-style h-[124px] resize-none"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                    <button onclick="publish()" id="pubBtn" class="btn-primary w-full py-5 mt-8 text-xl">פרסם דיל עכשיו 🚀</button>
                 </div>
+            </main>
 
-                <div class="grid grid-cols-2 gap-4">
-                    <div>
-                        <label>עיר</label>
-                        <input type="text" id="city" placeholder="מיקום" class="input-10gaz">
-                    </div>
-                    <div>
-                        <label>URL תמונה</label>
-                        <input type="url" id="img" placeholder="https://..." class="input-10gaz">
-                    </div>
+            <main id="list" class="page">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="text-2xl font-black">הדילים שלי</h3>
+                    <span id="deal-count" class="bg-blue-100 text-blue-600 px-3 py-1 rounded-full text-xs font-black">0 דילים</span>
                 </div>
+                <div id="my-list" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
+            </main>
+        </div>
 
-                <div class="grid grid-cols-2 gap-4">
-                    <div>
-                        <label>מחיר רגיל</label>
-                        <input type="number" id="orig" placeholder="₪" class="input-10gaz">
-                    </div>
-                    <div>
-                        <label>מחיר דיל</label>
-                        <input type="number" id="disc" placeholder="₪" class="input-10gaz !border-blue-500/40">
-                    </div>
-                </div>
-
-                <div class="grid grid-cols-2 gap-4">
-                    <div>
-                        <label>תאריך סיום</label>
-                        <input type="date" id="expiryDate" class="input-10gaz">
-                    </div>
-                    <div>
-                        <label>שעת סיום</label>
-                        <input type="time" id="time" class="input-10gaz">
-                    </div>
-                </div>
-
-                <div>
-                    <label>תיאור החוויה</label>
-                    <textarea id="desc" placeholder="מה כלול בדיל?" class="input-10gaz h-24"></textarea>
-                </div>
-
-                <button onclick="publish()" id="pubBtn" class="w-full bg-blue-600 text-white py-6 rounded-2xl font-black text-xl shadow-[0_0_30px_rgba(59,130,246,0.2)] hover:bg-blue-500 transition">DEPLOY LIVE</button>
-            </div>
-        </main>
-
-        <main id="list" class="page">
-            <h3 class="text-xl font-black mb-6 flex items-center gap-2">
-                <span class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
-                דילים פעילים במערכת
-            </h3>
-            <div id="my-list" class="space-y-4"></div>
-        </main>
-
-        <nav class="fixed bottom-6 left-1/2 -translate-x-1/2 bg-[#0a0a0a]/90 backdrop-blur-xl border border-white/10 rounded-3xl p-2 flex gap-2 shadow-2xl z-[100]">
-            <button onclick="switchTab('add')" id="tab-add" class="w-14 h-14 bg-blue-600 rounded-2xl flex items-center justify-center text-xl transition-all">➕</button>
-            <button onclick="switchTab('list')" id="tab-list" class="w-14 h-14 bg-white/5 rounded-2xl flex items-center justify-center text-xl hover:bg-white/10 transition-all">📋</button>
-            <div class="w-[1px] bg-white/10 mx-1 my-2"></div>
-            <button onclick="logout()" class="w-14 h-14 bg-red-500/10 rounded-2xl flex items-center justify-center text-xl text-red-500 hover:bg-red-500/20 transition-all">✕</button>
+        <nav class="fixed bottom-6 left-1/2 -translate-x-1/2 nav-dock p-2 flex gap-2 shadow-2xl z-50">
+            <button onclick="switchTab('add')" id="tab-add" class="flex items-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-2xl font-bold transition-all">
+                <span>➕</span> <span class="hidden md:inline">הוספת דיל</span>
+            </button>
+            <button onclick="switchTab('list')" id="tab-list" class="flex items-center gap-2 px-6 py-3 text-gray-400 hover:bg-gray-50 rounded-2xl font-bold transition-all">
+                <span>📋</span> <span class="hidden md:inline">ניהול דילים</span>
+            </button>
         </nav>
     </div>
 
@@ -125,49 +176,85 @@
         const db = getFirestore(app);
 
         let pid = localStorage.getItem('tafasti_pid');
+        let userEmail = localStorage.getItem('tafasti_email');
 
-        // קביעת תאריך ברירת מחדל להיום
-        document.getElementById('expiryDate').valueAsDate = new Date();
+        // מערכת הודעות מותאמת
+        function toast(msg, icon = '✨') {
+            const t = document.getElementById('custom-toast');
+            document.getElementById('toast-msg').innerText = msg;
+            document.getElementById('toast-icon').innerText = icon;
+            t.classList.add('show');
+            setTimeout(() => t.classList.remove('show'), 3000);
+        }
 
         window.toggleAuth = (mode) => {
-            document.getElementById('login-form').classList.toggle('hidden', mode === 'reg');
-            document.getElementById('reg-form').classList.toggle('hidden', mode === 'login');
+            document.getElementById('login-form').classList.add('hidden');
+            document.getElementById('reg-form').classList.add('hidden');
+            document.getElementById('forgot-form').classList.add('hidden');
+            document.getElementById('id-display').classList.add('hidden');
+            document.getElementById(`${mode}-form`).classList.remove('hidden');
         };
 
         window.login = async () => {
             const input = document.getElementById('pidInput').value.toUpperCase().trim();
-            if(!input) return alert('ENTER ID');
+            if(!input) return toast('נא להזין מספר ספק', '⚠️');
+            
             const snap = await getDoc(doc(db, "providers", input));
-            if(snap.exists()) { pid = input; startApp(); } else alert('INVALID PROVIDER ID');
+            if(snap.exists()) { 
+                pid = input; 
+                userEmail = snap.data().email;
+                startApp(); 
+            } else toast('מספר ספק לא נמצא', '❌');
         };
 
         window.register = async () => {
-            const email = document.getElementById('regEmail').value;
-            if(!email.includes('@')) return alert('INVALID EMAIL');
-            const newID = '10GAZ-' + Math.random().toString(36).substr(2, 4).toUpperCase();
+            const email = document.getElementById('regEmail').value.trim();
+            if(!email.includes('@')) return toast('מייל לא תקין', '📧');
+            
+            const newID = 'TAF-' + Math.floor(1000 + Math.random() * 9000); // מספר ספק נקי
             await setDoc(doc(db, "providers", newID), { email: email, createdAt: serverTimestamp() });
-            alert('ACCOUNT CREATED!\nYOUR ID: ' + newID);
-            pid = newID; startApp();
+            
+            userEmail = email;
+            pid = newID;
+            
+            document.getElementById('reg-form').classList.add('hidden');
+            document.getElementById('id-display').classList.remove('hidden');
+            document.getElementById('new-id-val').innerText = newID;
         };
 
-        function startApp() {
+        window.recover = async () => {
+            const email = document.getElementById('forgotEmail').value.trim();
+            const q = query(collection(db, "providers"), where("email", "==", email));
+            const snap = await getDocs(q);
+            if(!snap.empty) {
+                toast(`הקוד נשלח למייל: ${snap.docs[0].id}`, '📧');
+            } else toast('המייל לא קיים במערכת', '❌');
+        };
+
+        window.startApp = () => {
             localStorage.setItem('tafasti_pid', pid);
+            localStorage.setItem('tafasti_email', userEmail);
             document.getElementById('auth-screen').classList.add('hidden');
             document.getElementById('app').classList.remove('hidden');
-            document.getElementById('id-badge').innerText = pid;
+            document.getElementById('user-email-display').innerText = userEmail;
+            document.getElementById('expiryDate').valueAsDate = new Date();
             loadMyDeals();
         }
 
-        if(pid) startApp();
-        window.logout = () => { localStorage.removeItem('tafasti_pid'); location.reload(); };
+        if(pid && userEmail) window.startApp();
+
+        window.logout = () => { 
+            localStorage.clear(); 
+            location.reload(); 
+        };
 
         window.switchTab = (id) => {
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
             document.getElementById(id).classList.add('active');
             
-            // עדכון ויזואלי של הכפתורים
-            document.getElementById('tab-add').className = id === 'add' ? 'w-14 h-14 bg-blue-600 rounded-2xl flex items-center justify-center text-xl transition-all' : 'w-14 h-14 bg-white/5 rounded-2xl flex items-center justify-center text-xl hover:bg-white/10 transition-all';
-            document.getElementById('tab-list').className = id === 'list' ? 'w-14 h-14 bg-blue-600 rounded-2xl flex items-center justify-center text-xl transition-all' : 'w-14 h-14 bg-white/5 rounded-2xl flex items-center justify-center text-xl hover:bg-white/10 transition-all';
+            const isAdd = id === 'add';
+            document.getElementById('tab-add').className = isAdd ? 'flex items-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-2xl font-bold transition-all' : 'flex items-center gap-2 px-6 py-3 text-gray-400 hover:bg-gray-50 rounded-2xl font-bold transition-all';
+            document.getElementById('tab-list').className = !isAdd ? 'flex items-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-2xl font-bold transition-all' : 'flex items-center gap-2 px-6 py-3 text-gray-400 hover:bg-gray-50 rounded-2xl font-bold transition-all';
             
             if(id === 'list') loadMyDeals();
         };
@@ -175,30 +262,24 @@
         window.publish = async () => {
             const b = document.getElementById('pubBtn');
             const title = document.getElementById('title').value;
-            if(!title) return alert('MISSING TITLE');
+            if(!title) return toast('חסרה כותרת', '⚠️');
 
-            b.innerText = 'DEPLOYING...'; b.disabled = true;
+            b.innerText = 'מפרסם...'; b.disabled = true;
             
             try {
                 await addDoc(collection(db, "offers"), {
-                    title: title, 
-                    city: document.getElementById('city').value,
-                    time: document.getElementById('time').value, 
-                    expiryDate: document.getElementById('expiryDate').value,
+                    title: title, city: document.getElementById('city').value,
+                    time: document.getElementById('time').value, expiryDate: document.getElementById('expiryDate').value,
                     originalPrice: Number(document.getElementById('orig').value),
-                    discountPrice: Number(document.getElementById('disc').value), 
-                    imageUrl: document.getElementById('img').value,
-                    description: document.getElementById('desc').value, 
-                    providerID: pid, 
-                    status: "active", 
-                    createdAt: serverTimestamp()
+                    discountPrice: Number(document.getElementById('disc').value), imageUrl: document.getElementById('img').value,
+                    description: document.getElementById('desc').value, providerID: pid, status: "active", createdAt: serverTimestamp()
                 });
-                alert('SYSTEM ONLINE: DEAL DEPLOYED'); 
-                b.innerText = 'DEPLOY LIVE'; b.disabled = false;
+                toast('הדיל באוויר!', '🚀');
+                b.innerText = 'פרסם דיל עכשיו 🚀'; b.disabled = false;
                 switchTab('list');
             } catch (e) {
-                alert('ERROR DEPLOYING');
-                b.disabled = false; b.innerText = 'DEPLOY LIVE';
+                toast('שגיאה בפרסום', '❌');
+                b.disabled = false;
             }
         };
 
@@ -206,28 +287,26 @@
             const q = query(collection(db, "offers"), where("providerID", "==", pid));
             const snap = await getDocs(q);
             const list = document.getElementById('my-list');
+            document.getElementById('deal-count').innerText = `${snap.size} דילים`;
             list.innerHTML = '';
             
-            if(snap.empty) {
-                list.innerHTML = '<p class="text-center text-slate-600 font-bold py-10 uppercase text-xs tracking-widest">No active deployments found</p>';
-                return;
-            }
-
             snap.forEach(d => {
                 const data = d.data();
-                list.innerHTML += `<div class="glass-card flex justify-between items-center mb-4 border-l-4 border-l-blue-500">
+                list.innerHTML += `
+                <div class="premium-card p-4 flex justify-between items-center border-r-4 border-r-blue-500">
                     <div class="flex items-center gap-4">
-                        <img src="${data.imageUrl}" class="w-14 h-14 rounded-xl object-cover grayscale hover:grayscale-0 transition-all">
+                        <img src="${data.imageUrl}" class="w-16 h-16 rounded-xl object-cover">
                         <div>
-                            <h4 class="font-bold text-sm uppercase leading-none mb-1">${data.title}</h4>
-                            <p class="text-blue-500 font-black text-xs">₪${data.discountPrice} <span class="text-[9px] text-slate-500 font-normal mr-2">UNTIL: ${data.expiryDate || 'N/A'}</span></p>
+                            <h4 class="font-bold text-gray-900 leading-none mb-1">${data.title}</h4>
+                            <p class="text-blue-600 font-black text-sm">₪${data.discountPrice}</p>
+                            <p class="text-[9px] text-gray-400 font-bold uppercase mt-1">עד: ${data.expiryDate}</p>
                         </div>
                     </div>
-                    <button onclick="del('${d.id}')" class="text-red-500 text-[9px] font-black tracking-widest bg-red-500/5 px-3 py-2 rounded-lg border border-red-500/20 hover:bg-red-500 hover:text-white transition-all">DELETE</button>
+                    <button onclick="del('${d.id}')" class="p-3 hover:bg-red-50 text-red-400 rounded-xl transition-all">🗑️</button>
                 </div>`;
             });
         }
-        window.del = async (id) => { if(confirm('CONFIRM DELETION?')) { await deleteDoc(doc(db, "offers", id)); loadMyDeals(); } };
+        window.del = async (id) => { if(confirm('למחוק את הדיל?')) { await deleteDoc(doc(db, "offers", id)); loadMyDeals(); } };
     </script>
 </body>
 </html>
