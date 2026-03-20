@@ -109,7 +109,14 @@
                                 <input type="time" id="time" class="input-style">
                             </div>
                             <input type="tel" id="phone" placeholder="טלפון לוואטסאפ" class="input-style">
-                            <input type="text" id="imgUrl" placeholder="קישור לתמונה (אופציונלי)" class="input-style">
+                            
+                            <div class="relative">
+                                <input type="file" id="fileInput" accept="image/*" class="hidden" onchange="updateFileName(this)">
+                                <button onclick="document.getElementById('fileInput').click()" class="input-style bg-gray-50 border-dashed border-2 hover:bg-blue-50 text-blue-600 transition">📸 העלה תמונת דיל</button>
+                                <p id="fileNameDisplay" class="text-[10px] text-gray-400 mt-1 mr-2 font-bold"></p>
+                            </div>
+
+                            <input type="text" id="imgUrl" placeholder="או הדבק קישור לתמונה" class="input-style">
                             <textarea id="desc" placeholder="תיאור קצר..." class="input-style h-20 resize-none text-right"></textarea>
                         </div>
                     </div>
@@ -137,6 +144,10 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
+        // --- Cloudinary Config ---
+        const CLOUDINARY_URL = "https://api.cloudinary.com/v1_1/dce5qps12/image/upload";
+        const CLOUDINARY_PRESET = "Tafasti";
+
         let pid = localStorage.getItem('tafasti_pid');
         let userEmail = localStorage.getItem('tafasti_email');
 
@@ -148,9 +159,18 @@
             setTimeout(() => t.classList.remove('show'), 3000);
         }
 
+        window.updateFileName = (input) => {
+            const fileName = input.files[0]?.name;
+            document.getElementById('fileNameDisplay').innerText = fileName ? "קובץ נבחר: " + fileName : "";
+        };
+
         window.toggleAuth = (m) => {
-            ['login','reg','forgot','id-display'].forEach(x => document.getElementById(x+'-form')?.classList.add('hidden') || document.getElementById(x)?.classList.add('hidden'));
-            document.getElementById(m + (m === 'id-display' ? '' : '-form')).classList.remove('hidden');
+            ['login','reg','forgot','id-display'].forEach(x => {
+                const el = document.getElementById(x+'-form') || document.getElementById(x);
+                if(el) el.classList.add('hidden');
+            });
+            const target = document.getElementById(m + (m === 'id-display' ? '' : '-form'));
+            if(target) target.classList.remove('hidden');
         };
 
         window.login = async () => {
@@ -174,7 +194,7 @@
             const newID = 'TAF-' + Math.floor(1000 + Math.random() * 9000);
             await setDoc(doc(db, "providers", newID), { email, createdAt: serverTimestamp() });
             
-            pid = newID; userEmail = email; // שמירה בזיכרון המקומי
+            pid = newID; userEmail = email; 
             document.getElementById('reg-form').classList.add('hidden');
             document.getElementById('id-display').classList.remove('hidden');
             document.getElementById('new-id-val').innerText = newID;
@@ -185,10 +205,7 @@
             if(!email) return toast('הזן מייל', '📧');
             const q = query(collection(db, "providers"), where("email", "==", email));
             const snap = await getDocs(q);
-            
             if(snap.empty) return toast('המייל לא נמצא', '❌');
-            
-            // כאן נשלח המייל - בינתיים מציגים הודעה
             toast('הקוד נשלח למייל שלך!', '📩');
             setTimeout(() => toggleAuth('login'), 2000);
         };
@@ -199,20 +216,40 @@
             document.getElementById('auth-screen').classList.add('hidden');
             document.getElementById('app').classList.remove('hidden');
             document.getElementById('user-email-display').innerText = userEmail;
-            
-            // הגדרת תאריך ברירת מחדל להיום
             document.getElementById('expiryDate').valueAsDate = new Date();
             loadMyDeals();
         };
+
+        // פונקציית העלאת תמונה
+        async function uploadToCloudinary(file) {
+            const formData = new FormData();
+            formData.append('file', file);
+            formData.append('upload_preset', CLOUDINARY_PRESET);
+            const response = await fetch(CLOUDINARY_URL, { method: 'POST', body: formData });
+            if (!response.ok) throw new Error('Upload failed');
+            const data = await response.json();
+            return data.secure_url;
+        }
 
         window.publish = async () => {
             const b = document.getElementById('pubBtn');
             const title = document.getElementById('title').value;
             const region = document.getElementById('region').value;
+            const fileInput = document.getElementById('fileInput');
+            const manualUrl = document.getElementById('imgUrl').value;
+
             if(!title || !region) return toast('מלא כותרת ואזור', '⚠️');
 
             b.innerText = 'מפרסם...'; b.disabled = true;
+
             try {
+                let finalUrl = manualUrl || "https://tinokotnet.files.wordpress.com/2016/03/girl-812482_640.jpg";
+
+                if (fileInput.files.length > 0) {
+                    b.innerText = 'מעלה תמונה...';
+                    finalUrl = await uploadToCloudinary(fileInput.files[0]);
+                }
+
                 await addDoc(collection(db, "offers"), {
                     title, region,
                     phone: document.getElementById('phone').value,
@@ -220,14 +257,21 @@
                     discountPrice: Number(document.getElementById('disc').value),
                     expiryDate: document.getElementById('expiryDate').value,
                     time: document.getElementById('time').value,
-                    imageUrl: document.getElementById('imgUrl').value || "https://tinokotnet.files.wordpress.com/2016/03/girl-812482_640.jpg",
+                    imageUrl: finalUrl,
                     description: document.getElementById('desc').value,
                     providerID: pid,
                     createdAt: serverTimestamp()
                 });
+                
                 toast('פורסם בהצלחה!', '🚀');
+                // איפוס שדות העלאה
+                fileInput.value = "";
+                document.getElementById('fileNameDisplay').innerText = "";
                 switchTab('list');
-            } catch (e) { toast('שגיאה בפרסום', '❌'); }
+            } catch (e) { 
+                console.error(e);
+                toast('שגיאה בתהליך', '❌'); 
+            }
             b.innerText = 'פרסם דיל עכשיו 🚀'; b.disabled = false;
         };
 
@@ -249,6 +293,7 @@
         };
 
         window.del = async (id) => { if(confirm('למחוק?')) { await deleteDoc(doc(db, "offers", id)); loadMyDeals(); } };
+        
         window.switchTab = (id) => {
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
             document.getElementById(id).classList.add('active');
@@ -256,6 +301,7 @@
             document.getElementById('tab-add').className = id === 'add' ? 'px-8 py-4 bg-blue-600 text-white rounded-2xl font-bold' : 'px-8 py-4 text-gray-400 rounded-2xl font-bold';
             document.getElementById('tab-list').className = id === 'list' ? 'px-8 py-4 bg-blue-600 text-white rounded-2xl font-bold' : 'px-8 py-4 text-gray-400 rounded-2xl font-bold';
         };
+
         window.logout = () => { localStorage.clear(); location.reload(); };
 
         if(pid && userEmail) startApp();
