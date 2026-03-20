@@ -220,14 +220,17 @@
             b.disabled = false; b.innerText = 'פרסם דיל עכשיו 🚀';
         };
 
-        window.startApp = () => {
-            localStorage.setItem('tafasti_pid', pid);
-            localStorage.setItem('tafasti_email', userEmail);
-            document.getElementById('auth-screen').classList.add('hidden');
-            document.getElementById('app').classList.remove('hidden');
-            document.getElementById('user-email-display').innerText = userEmail;
-            loadMyDeals();
-        }
+window.startApp = () => {
+    localStorage.setItem('tafasti_pid', pid);
+    localStorage.setItem('tafasti_email', userEmail);
+    document.getElementById('auth-screen').classList.add('hidden');
+    document.getElementById('app').classList.remove('hidden');
+    document.getElementById('user-email-display').innerText = userEmail;
+    document.getElementById('expiryDate').valueAsDate = new Date();
+    // -----------------------
+
+    loadMyDeals();
+}
 
         if(pid && userEmail) window.startApp();
         window.logout = () => { localStorage.clear(); location.reload(); };
